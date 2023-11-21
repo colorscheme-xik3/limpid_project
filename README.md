@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="/images/logos/Logo_white.png" alt="Limpid Project">
+  <img src="/images/logos/Logo_white.png" alt="Limpid Project" width="100">
 </p>
 
 ## Overview
