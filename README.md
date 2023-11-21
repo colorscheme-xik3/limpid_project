@@ -1,4 +1,7 @@
-# Limpid Project
+
+<p align="center">
+  <img src="/images/logos/Logo_white.png" alt="Limpid Project">
+</p>
 
 ## Overview
 
