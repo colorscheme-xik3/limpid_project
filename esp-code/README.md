@@ -1,6 +1,8 @@
 
 # LIMPID convention for C coding
 
+![diagram](images/software/diagram-system.png)
+
 ## Description
 
 This naming is dedicated to developing embedded C code specifically for the ESP-32 microcontroller. To maintain consistency and enhance code readability, we have established the following naming conventions.
