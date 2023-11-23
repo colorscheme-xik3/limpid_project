@@ -2,7 +2,7 @@
 # LIMPID convention for C coding
 
 <p align="center">
-  <img src="esp-code/images/diagram_system.png" width="300">
+  <img src="/images/diagram_system.png" alt="Limpid Project">
 </p>
 
 ## Description
