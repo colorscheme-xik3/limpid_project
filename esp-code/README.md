@@ -1,7 +1,7 @@
 
 # LIMPID convention for C coding
 
-![diagram](.../images/software/diagram-system.png)
+![diagram](/images/diagram-system.png)
 
 ## Description
 
