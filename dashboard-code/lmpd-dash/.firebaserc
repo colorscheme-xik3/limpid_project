@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "limpid-7f8dc": {
+      "hosting": {
+        "lmpd-dash": [
+          "limpid-7f8dc"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "limpid-7f8dc"
+  }
+}
