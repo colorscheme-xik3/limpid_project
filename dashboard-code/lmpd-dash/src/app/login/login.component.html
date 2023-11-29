@@ -1,1 +1,18 @@
-<p>login works!</p>
+<!-- login.component.html -->
+<div class="background-image"></div>
+<div class="container">
+  <div class="logo-container">
+    <img src="/assets/images-login/white_logo.png" alt="White Logo">
+  </div>
+  <h2></h2>
+  <form id="loginForm" class="input-fields-container" (ngSubmit)="login()">
+    <!-- Use the [(ngModel)] directive for two-way binding with Angular -->
+    <input type="text" id="username" name="username" placeholder="Username" [(ngModel)]="username" required />
+    <input type="password" id="password" name="password" placeholder="Password" [(ngModel)]="password" required />
+    <button type="submit" id="login">Login</button>
+  </form>
+  <p id="message"></p>
+</div>
+<footer class="footer">
+  <p>Designed and developed by Francisco Duarte and Leonardo Rosa - Portugal</p>
+</footer>

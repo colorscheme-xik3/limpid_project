@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Renderer2, ElementRef, OnInit } from '@angular/core';
+
 
 @Component({
   selector: 'app-root',

@@ -1,0 +1,119 @@
+/* sidebar.component.css */
+
+.sidebar {
+    
+    height: 100%;
+    width: 200px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #93acff; /* Set your desired background color */
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px; /* Adjust the margin for proper spacing */
+}
+
+.logo img {
+    width: 40%; /* Set your desired logo width as a percentage of its parent container */
+    max-width: 100px; /* Set a maximum width if needed */
+    height: auto;
+    margin: 0 auto; /* Center the image horizontally within the logo container */
+}
+
+.nav-links {
+    font-family: 'Ubuntu', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Updated styling for buttons */
+.nav-links button {
+    font-family: 'Ubuntu', sans-serif;
+    width: 100%; /* Adjusted to take full width of the container */
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2vh;
+    padding: 0px 50px 0px 10px; /* Adjusted padding to move the SVG more to the left */
+    background-color: #f4faff;
+    border-radius: 10px;
+    color: #103F91;
+    border: none;
+    position: relative;
+    cursor: pointer;
+    transition-duration: .2s;
+    margin-bottom: 10vh; /* Added margin between buttons */
+}
+
+.nav-links button .bell {
+    width: 20px;
+}
+
+.nav-links button .bell path {
+    fill: #103F91;
+}
+
+.nav-links button .arrow {
+    position: absolute;
+    right: 0;
+    width: 30px;
+    height: 100%;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-links button:hover {
+    background-color: #93acff;
+    transition-duration: .2s;
+}
+
+.nav-links button:hover .arrow {
+    animation: slide-right .6s ease-out both;
+}
+
+/* arrow animation */
+@keyframes slide-right {
+    0% {
+        transform: translateX(-10px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.nav-links button:active {
+    transform: translate(1px, 1px);
+    transition-duration: .2s;
+}
+
+.footer-bar {
+    font-family: 'Ubuntu', sans-serif;
+    height: 40px; /* Adjust the height as needed */
+    width: 100vw; /* Set width to 100% of the viewport width */
+    color: #fff;
+    background-color: #93acff; /* Set your desired background color */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center; /* Center the text horizontally */
+}
+
+
