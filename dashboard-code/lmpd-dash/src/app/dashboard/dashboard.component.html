@@ -1,6 +1,11 @@
 <!-- dashboard.component.html -->
-<app-wrapper>
-    <!-- Your dashboard content goes here -->
-    <h2>Welcome to the Dashboard!</h2>
-  </app-wrapper>
-  
+<app-wrapper [ngClass]="{
+  'water-selected': selectedButton === 'water',
+  'surf-selected': selectedButton === 'surf',
+  'profile-selected': selectedButton === 'profile',
+  'about-selected': selectedButton === 'about',
+  'logout-selected': selectedButton === 'logout'
+}">
+</app-wrapper>
+    <router-outlet></router-outlet>
+

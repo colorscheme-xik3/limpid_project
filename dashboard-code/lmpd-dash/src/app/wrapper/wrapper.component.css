@@ -1,3 +1,4 @@
+
 /* sidebar.component.css */
 
 .sidebar {
@@ -12,6 +13,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    z-index: 0;
 }
 
 .logo {
@@ -109,7 +111,7 @@
     position: fixed;
     bottom: 0;
     left: 0;
-    
+    font-size: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -117,3 +119,39 @@
 }
 
 
+.main-container {
+    margin-left: 200px; /* Adjust this margin to match the width of your sidebar */
+    margin-bottom: 40px; /* Adjust this margin to leave space for the footer */
+    padding: 20px;
+    width: calc(100% - 200px); /* Calculate the width of the remaining space */
+    height: calc(100% - 80px); /* Calculate the height of the remaining space */
+    box-sizing: border-box;
+    overflow: hidden; /* Hide any content that exceeds the container */
+}
+
+/* Ensure content inside the main container does not exceed its height */
+.main-container > * {
+    max-height: 100%; /* Adjust the max-height based on your specific layout */
+    overflow: hidden;
+}
+
+
+  
+/* home.component.css */
+.center-title {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 90%;
+    display: flex;
+    padding: 30px;
+    justify-content: left;
+    align-items: top;
+}
+
+.container {
+    width: 97%; /* Set your desired width */
+    max-width: 100%; /* Set a maximum width if needed */
+    background-color: #621313; /* Set your desired background color */
+    padding: 20px;
+    border-radius: 10px 10px 0 0; /* Adjust the border-radius to make all corners rounded */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow for depth */
+}

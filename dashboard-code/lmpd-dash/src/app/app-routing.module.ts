@@ -3,15 +3,26 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { HomeComponent } from './dashboard/home/home.component';
+import { WaterComponent } from './dashboard/water/water.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: '', redirectTo: '/login', pathMatch: 'full' }, // Redirect to login if no path provided
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    children: [
+      { path: 'home', component: HomeComponent },
+      { path: 'water', component: WaterComponent },
+      // Add other child routes as needed
+      { path: '', redirectTo: 'home', pathMatch: 'full' } // Default child route
+    ],
+  },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
