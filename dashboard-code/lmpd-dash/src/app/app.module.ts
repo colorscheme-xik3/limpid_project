@@ -14,6 +14,7 @@ import { WrapperComponent } from './wrapper/wrapper.component';
 import { HomeComponent } from './dashboard/home/home.component';
 import { WaterComponent } from './dashboard/water/water.component'; // Import the HomeComponent
 
+import { HttpClientModule } from '@angular/common/http';
 
 // Define your routes
 const routes: Routes = [
@@ -46,8 +47,9 @@ const routes: Routes = [
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     RouterModule.forRoot(routes),
+    HttpClientModule,
   ],
-  providers: [],
+  
   bootstrap: [AppComponent],
 })
 export class AppModule {}

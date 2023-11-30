@@ -1,1 +1,62 @@
 @import '../../wrapper/wrapper.component.css';
+
+.main-container {
+  display: flex;
+}
+
+.container {
+  flex: 1;
+  background-color: transparent;
+  padding: 20px;
+  border-radius: 10px 10px 0 0;
+}
+
+.side-panel {
+  margin-top: 5%;
+  width: 20%; /* Adjust the width as needed */
+  background-color: transparent;
+  padding: 50px;
+}
+
+.weather-rectangle {
+    background-color: #212121;
+    margin-bottom: 50px;
+    padding: 10px;
+    border-radius: 10px 10px 10px 10px;
+
+  }
+  
+  .weather-rectangle h3 {
+    font-family: 'Ubuntu', sans-serif;
+    
+    color: #e2b50e;
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+
+  .weather-info {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
+    color: white;
+  }
+  
+
+.center-title {
+  font-family: 'Ubuntu', sans-serif;
+  flex-direction: column;
+  color: white;
+  font-size: 90%;
+  display: flex;
+  padding: 30px;
+  justify-content: left;
+  align-items: top;
+}
+
+.image-container {
+  text-align: center;
+  margin-top: 70px; /* Adjusted margin to move the image up */
+}
+
+.image-container img {
+  max-width: 40%; /* Ensures the image doesn't exceed its container */
+}
