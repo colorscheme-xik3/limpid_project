@@ -18,7 +18,8 @@ const routes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' } // Default child route
     ],
   },
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '', redirectTo: '', pathMatch: 'full' },
+  { path: '**', redirectTo: '' },
 ];
 
 @NgModule({

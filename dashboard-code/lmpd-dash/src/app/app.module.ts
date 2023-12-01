@@ -16,6 +16,8 @@ import { WaterComponent } from './dashboard/water/water.component'; // Import th
 
 import { HttpClientModule } from '@angular/common/http';
 
+
+
 // Define your routes
 const routes: Routes = [
   { path: '', component: LoginComponent },
