@@ -13,6 +13,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { WrapperComponent } from './wrapper/wrapper.component';
 import { HomeComponent } from './dashboard/home/home.component';
 import { WaterComponent } from './dashboard/water/water.component'; // Import the HomeComponent
+import { NgApexchartsModule } from 'ng-apexcharts';
 
 import { HttpClientModule } from '@angular/common/http';
 
@@ -50,6 +51,7 @@ const routes: Routes = [
     AngularFireAuthModule,
     RouterModule.forRoot(routes),
     HttpClientModule,
+    NgApexchartsModule
   ],
   
   bootstrap: [AppComponent],
