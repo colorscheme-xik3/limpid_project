@@ -1,0 +1,27 @@
+@import '../../wrapper/wrapper.component.css';
+
+.main-container {
+  display: flex;
+  flex-direction: column; /* Stack contents vertically */
+  background-color: black; /* Replace with your desired background color */
+}
+
+.container {
+  flex: 1;
+  background-color: transparent;
+  padding: 20px;
+  border-radius: 10px 10px 0 0;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns with equal width */
+  gap: 20px; /* Gap between charts */
+  padding: 3vw; /* Padding as a percentage of the viewport width */
+}
+
+
+.chart {
+  max-width: 100%; /* Allow charts to take full width of their container */
+  height: 300px; /* Set a fixed height for charts */
+}

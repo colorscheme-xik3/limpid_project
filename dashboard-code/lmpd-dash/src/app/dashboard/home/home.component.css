@@ -1,7 +1,9 @@
 @import '../../wrapper/wrapper.component.css';
 
+
 .main-container {
   display: flex;
+  background: url('/assets/images-home/background_home.jpg') center center / cover no-repeat; 
 }
 
 .container {

@@ -1,115 +1,122 @@
-import { Component, OnInit } from "@angular/core";
-import {
-  ApexAxisChartSeries,
-  ApexNonAxisChartSeries,  // Add this import
-  ApexChart,
-  ApexTitleSubtitle,
-  ApexDataLabels,
-  ApexFill,
-  ApexMarkers,
-  ApexYAxis,
-  ApexXAxis,
-  ApexTooltip
-} from "ng-apexcharts";
-//import { waterTemperatureData } from "./water-temperature-data";
+import { Component, OnInit } from '@angular/core';
+import ApexCharts from 'apexcharts';
 
 @Component({
-  selector: "app-water",
-  templateUrl: "./water.component.html",
-  styleUrls: ["./water.component.css"]
+  selector: 'app-water',
+  templateUrl: './water.component.html',
+  styleUrls: ['./water.component.css']
 })
 export class WaterComponent implements OnInit {
-  public chartOptions: {
-    series: (ApexAxisChartSeries | ApexNonAxisChartSeries)[]; // Change this line
-    chart: ApexChart;
-    dataLabels: ApexDataLabels;
-    markers: ApexMarkers;
-    title: ApexTitleSubtitle;
-    fill: ApexFill;
-    yaxis: ApexYAxis;
-    xaxis: ApexXAxis;
-    tooltip: ApexTooltip;
-  } = {
-    series: [], // Initialize as an empty array
-    chart: {
-      type: "area",
-      stacked: false,
-      height: 350,
-      zoom: {
-        type: "x",
-        enabled: true,
-        autoScaleYaxis: true
-      },
-      toolbar: {
-        autoSelected: "zoom"
-      }
-    },
-    dataLabels: {
-      enabled: false
-    },
-    markers: {
-      size: 0
-    },
-    title: {
-      text: "Water Temperature Over Time",
-      align: "left"
-    },
-    fill: {
-      type: "gradient",
-      gradient: {
-        shadeIntensity: 1,
-        inverseColors: false,
-        opacityFrom: 0.5,
-        opacityTo: 0,
-        stops: [0, 90, 100]
-      }
-    },
-    yaxis: {
-      labels: {
-        formatter: (val: number) => val.toFixed(2),
-      },
-      title: {
-        text: "Temperature (°C)"
-      }
-    },
-    xaxis: {
-      type: "datetime"
-    },
-    tooltip: {
-      shared: false,
-      y: {
-        formatter: (val: number) => val.toFixed(2),
-      }
-    }
-  };
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit(): void {
-    this.initChartData();
-  }
+  
+    // Sample data for the first chart
+    const chartData1 = {
+      series: [
+        {
+          name: "High - 2013",
+          data: [28, 29, 33, 36, 32, 32, 33]
+        },
+        {
+          name: "Low - 2013",
+          data: [12, 11, 14, 18, 17, 13, 13]
+        }
+      ],
+      chart: {
+        height: 350,
+        type: 'line',
+        dropShadow: {
+          enabled: true,
+          color: '#000',
+          top: 18,
+          left: 7,
+          blur: 10,
+          opacity: 0.2
+        },
+        toolbar: {
+          show: false
+        }
+      },
+      colors: ['#77B6EA', '#545454'],
+      dataLabels: {
+        enabled: true,
+      },
+      stroke: {
+        curve: 'smooth'
+      },
+      title: {
+        text: 'Average High & Low Temperature',
+        align: 'left'
+      },
+      grid: {
+        borderColor: '#e7e7e7',
+        row: {
+          colors: ['#f3f3f3', 'transparent'],
+          opacity: 0.5
+        },
+      },
+      markers: {
+        size: 1
+      },
+      xaxis: {
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        title: {
+          text: 'Month'
+        }
+      },
+      yaxis: {
+        title: {
+          text: 'Temperature'
+        },
+        min: 5,
+        max: 40
+      },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+        floating: true,
+        offsetY: -25,
+        offsetX: -5
+      },
+      tooltip: {
+        shared: true,
+        intersect: false,
+        theme: 'dark',
+      },
+    };
 
-  private initChartData(): void {
-    // Example data for testing
-    const exampleData = [
-      10, 12, 14, 18, 20, 22, 24, 26, 28, 30, 25, 22, 20, 18, 16, 14, 12, 10, 8, 6,
-      8, 10, 12, 14, 18, 20, 22, 24, 26, 28, 30, 25, 22, 20, 18, 16, 14, 12, 10, 8, 6,
-      // ... add more values as needed
-    ];
-  
-    let ts2 = 1484418600000;
-    let dataPoints = [];
-  
-    for (let i = 0; i < exampleData.length; i++) {
-      ts2 = ts2 + 86400000;
-      dataPoints.push({ x: ts2, y: exampleData[i] });
-    }
-  
-    this.chartOptions.series = [
-      {
-        name: "Water Temperature",
-        data: dataPoints
-      } as any // Use type assertion to 'any' for flexibility
-    ];
+    // Create an ApexCharts instance for the first chart
+    const chart1 = new ApexCharts(document.getElementById('chart1'), chartData1);
+
+    // Render the first chart
+    chart1.render();
+
+    // Sample data for the second chart
+    const chartData2 = {
+      series: [{
+        name: 'Sample Series 2',
+        data: [20, 35, 50, 65, 80, 95, 110, 125, 140],
+      }],
+      chart: {
+        type: 'bar',
+        height: 350,
+        // Apply the dark mode theme
+        background: 'rgba(0, 0, 0, 0.5)', // Set background color
+      },
+      tooltip: {
+        theme: 'dark',
+      },
+      xaxis: {
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+      },
+    };
+
+    // Create an ApexCharts instance for the second chart
+    const chart2 = new ApexCharts(document.getElementById('chart2'), chartData2);
+
+    // Render the second chart
+    chart2.render();
   }
 }
