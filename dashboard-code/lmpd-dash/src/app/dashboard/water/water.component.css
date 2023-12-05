@@ -3,14 +3,93 @@
 .main-container {
   display: flex;
   flex-direction: column; /* Stack contents vertically */
-  background-color: black; /* Replace with your desired background color */
+  background-color: #212121; /* Replace with your desired background color */
 }
 
 .container {
-  flex: 1;
+  display: flex;
   background-color: transparent;
-  padding: 20px;
+  padding: 40px;
   border-radius: 10px 10px 0 0;
+}
+
+.card {
+  display: flex;
+  position: relative;
+  width: 200px;
+  height: 100px;
+  flex-direction: column;
+  background: rgb(17, 4, 134);
+  border-radius: 15px;
+  box-shadow: rgb(0, 0, 0, 0.7) 5px 10px 20px, rgb(0, 0, 0, 0.7) -5px 0px 20px;
+  background: linear-gradient(to right, rgb(20, 30, 48), #103F91);
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  overflow: show;
+  margin-right: 2%;
+}
+
+.card-text {
+  font-size: 30px;
+  margin-top: 20%;
+  margin-left: 15px;
+  font-weight: 600;
+  color: white; /* Ensure text is visible against the dark background */
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.card-sub-text {
+  font-size: 15px;
+  margin-left: 5px;
+  color: white; /* Ensure text is visible against the dark background */
+}
+
+.under-text {
+  font-size: 15px;
+  margin-top: -20%;
+  margin-left: 15px;
+  color: white; /* Ensure text is visible against the dark background */
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.moon-checkbox {
+  display: none;
+  
+}
+
+.moon-label {
+  width: 1em;
+  height: 1em;
+  background-color: transparent;
+  border: 2px solid white; /* Adjust border color and size as needed */
+  border-radius: 50%;
+  position: flex;
+  top: 20%; /* Adjust the distance from the top */
+  left: 90%; /* Adjust the distance from the right */
+  cursor: pointer;
+}
+
+.moon-checkbox:checked + .moon-label::after {
+  content: "";
+  width: 0.5em;
+  height: 0.5em;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid #333;
+  background-color: #fff;
 }
 
 .chart-grid {
@@ -19,7 +98,6 @@
   gap: 20px; /* Gap between charts */
   padding: 3vw; /* Padding as a percentage of the viewport width */
 }
-
 
 .chart {
   max-width: 100%; /* Allow charts to take full width of their container */
