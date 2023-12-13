@@ -1,16 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import ApexCharts from 'apexcharts';
 
-@Component({
-  selector: 'app-water',
-  templateUrl: './water.component.html',
-  styleUrls: ['./water.component.css']
-})
-export class WaterComponent implements OnInit {
 
-  constructor() { }
-
-  ngOnInit(): void {
+  
+    
+    /*
   
     // Sample data for the first chart
     const chartData1 = {
@@ -119,4 +111,64 @@ export class WaterComponent implements OnInit {
     // Render the second chart
     chart2.render();
   }
+  */
+
+// water.component.ts
+import { Component, OnInit } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { AngularFireDatabase } from '@angular/fire/compat/database';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { switchMap, startWith, distinctUntilChanged } from 'rxjs/operators';
+
+@Component({
+  selector: 'app-water',
+  templateUrl: './water.component.html',
+  styleUrls: ['./water.component.css']
+})
+export class WaterComponent implements OnInit {
+  sensorValues$: Observable<{ [key: string]: { Temperature: string, "Potential Hydrogen": string } }> | null = null;
+  lastTimestamp: string | null = null;
+
+  private sensorValuesSubject = new BehaviorSubject<{ [key: string]: { Temperature: string, "Potential Hydrogen": string } } | null>(null);
+
+  constructor(private db: AngularFireDatabase, private afAuth: AngularFireAuth) {}
+
+  ngOnInit() {
+    console.log('Initializing WaterComponent');
+    this.sensorValues$ = this.afAuth.authState.pipe(
+      switchMap(user => {
+        if (user) {
+          console.log('User is logged in:', user.uid);
+          // If the user is logged in, fetch sensor values
+          return this.getData(`/users/${user.uid}/sensorValues`);
+        } else {
+          console.log('User is not logged in');
+          // If the user is not logged in, return an observable with null
+          return new Observable();
+        }
+      }),
+      startWith(null),
+      distinctUntilChanged()
+    );
+
+    this.sensorValues$.subscribe(sensorValues => {
+      console.log('Received sensorValues:', sensorValues);
+      this.sensorValuesSubject.next(sensorValues || null);
+
+      // Get the last timestamp when sensorValues are received
+      this.lastTimestamp = this.getLastTimestamp(sensorValues);
+    });
+  }
+
+  private getData(path: string): Observable<any> {
+    return this.db.object<any>(path).valueChanges();
+  }
+
+  private getLastTimestamp(sensorValues: { [key: string]: { Temperature: string, "Potential Hydrogen": string } }): string | null {
+    const timestamps = Object.keys(sensorValues || {});
+    return timestamps.length > 0 ? timestamps[timestamps.length - 1] : null;
+  }
 }
+
+
+

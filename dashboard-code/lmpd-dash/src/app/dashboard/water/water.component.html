@@ -1,21 +1,35 @@
 <div class="main-container">
   <div class="container">
 
-    <!-- Squares with checkboxes -->
-    <div class="card" id="temp">
-      <p class="card-text"><span>23</span><span class="card-sub-text">ºC</span></p>
-      <p class="under-text">Temperature</p>
-      <input type="checkbox" id="tempCheckbox" class="moon-checkbox">
-      <label for="tempCheckbox" class="moon-label"></label>
+    <div *ngIf="sensorValues$ | async as sensorValues">
+      <div *ngIf="lastTimestamp">
+        <!-- Temperature Card -->
+        <div class="card" id="temp">
+          <p class="card-text">
+            <span>{{ sensorValues[lastTimestamp].Temperature }}</span>
+            <span class="card-sub-text">ºC</span>
+          </p>
+          <p class="under-text">Temperature</p>
+        </div>
+      </div>
     </div>
 
-    <div class="card" id="ph">
-      <p class="card-text"><span>--</span><span class="card-sub-text">pH</span></p>
-      <p class="under-text">Potential Hydrogen</p>
-      <input type="checkbox" id="phCheckbox" class="moon-checkbox">
-      <label for="phCheckbox" class="moon-label"></label>
+    <div *ngIf="sensorValues$ | async as sensorValues">
+      <div *ngIf="lastTimestamp">
+        <!-- pH Card -->
+        <div class="card" id="ph">
+          <p class="card-text">
+            <span>{{ sensorValues[lastTimestamp]['Potential Hydrogen'] }}</span>
+            <span class="card-sub-text">pH</span>
+          </p>
+          <p class="under-text">Potential Hydrogen</p>
+        </div>
+      </div>
     </div>
-
+        <!-- Add more cards as needed -->
+   
+    
+  
     <div class="card" id="tds">
       <p class="card-text"><span>--</span><span class="card-sub-text"> ppm</span></p>
       <p class="under-text">Total Dissolved Solids</p>
