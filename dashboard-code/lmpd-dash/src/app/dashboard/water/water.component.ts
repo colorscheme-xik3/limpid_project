@@ -126,7 +126,7 @@ import { switchMap, startWith, distinctUntilChanged } from 'rxjs/operators';
   styleUrls: ['./water.component.css']
 })
 export class WaterComponent implements OnInit {
-  sensorValues$: Observable<{ [key: string]: { Temperature: string, "Potential Hydrogen": string } }> | null = null;
+  sensorValues$: Observable<{ [key: string]: { "Temperature": string, "Potential Hydrogen": string } }> | null = null;
   lastTimestamp: string | null = null;
 
   private sensorValuesSubject = new BehaviorSubject<{ [key: string]: { Temperature: string, "Potential Hydrogen": string } } | null>(null);

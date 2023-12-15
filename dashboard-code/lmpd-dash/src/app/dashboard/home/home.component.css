@@ -3,21 +3,23 @@
 
 .main-container {
   display: flex;
+  width: 81%;
+  height: 90vh;
+  margin-left: 15%;
   background: url('/assets/images-home/background_home.jpg') center center / cover no-repeat; 
 }
 
 .container {
-  flex: 1;
   background-color: transparent;
-  padding: 20px;
   border-radius: 10px 10px 0 0;
+  width: 300vh;
 }
 
 .side-panel {
   margin-top: 5%;
-  width: 20%; /* Adjust the width as needed */
+  width: 80%; /* Adjust the width as needed */
   background-color: transparent;
-  padding: 20px;
+  margin-left: 10%;
 }
 
 .weather-rectangle {
@@ -65,3 +67,48 @@
     max-width: 65%;
     border-radius: 10px;
   }
+
+
+  @media screen and (min-width: 1920px) {
+
+    .main-container {
+      display: flex;
+      width: 164vh;
+      margin-left:12%;
+      height: 93vh;
+    }
+
+    .container {
+      background-color: transparent;
+      border-radius: 10px 10px 0 0;
+      width: 300vh;
+    }
+    
+    .side-panel {
+      margin-top: 5%;
+      width: 90%; /* Adjust the width as needed */
+      background-color: tra;
+      margin-left: 10%;
+    }
+    
+
+    .weather-rectangle {
+      background-color: #212121;
+      width: 70%;
+      margin-bottom: 50%;
+      margin-right: 50%;
+      border-radius: 10px 10px 10px 10px;
+  
+    }
+
+    .center-title {
+      font-family: 'Ubuntu', sans-serif;
+      flex-direction: column;
+      color: white;
+      font-size: 100%;
+      display: flex;
+      
+    }
+    
+    
+}

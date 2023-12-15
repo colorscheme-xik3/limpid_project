@@ -1,111 +1,94 @@
 body {
-    font-family: 'Ubuntu';
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-  }
+  font-family: 'Ubuntu';
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 10vh;
+}
 
-  .background-image {
-    /* Set the background image and style */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("/assets/images-login/beach_background.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: -1; /* Ensure the background image is behind other content */
-  }
-  .container input::placeholder {
-    color: white;
-  }
-  
-  .container {
-    /* Remove fixed width to let the container adjust to its contents */
-    width: 90%;
-    max-width: 600px; /* Set a maximum width for the container */
-    margin: 0 auto;
-    padding: 80px;
-    border-radius: 30px;
-    background-color: transparent;
-    font-family: 'Lunasima', sans-serif;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+.background-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("/assets/images-login/beach_background.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
 
-  
-/* Style for the top logo container */
+.container {
+  width: 90%;
+  max-width: 40%;
+  margin: 0 auto;
+  border-radius: 30px;
+  background-color: transparent;
+  font-family: 'Lunasima', sans-serif;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .logo-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 0px;
-  }
-  
-  /* Style for the logo image */
-  .logo-container img {
-    max-width: 70%; /* Make the logo responsive */
-    height: auto;
-  }
+  width: 75%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5%;
+  margin-top: 20%;
+}
 
-  
-  
-  .input-fields-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center the input fields horizontally */
-    width: 100%; /* Set the width to fill the container */
-  }
-  
-  .container input {
-    background-color: transparent; /* Transparent background for input elements */
-    border: 3px solid white; /* Add border only for the input elements */
-    color: white; /* Set text color to white */
-    border-radius: 30px; /* Add roundness to the input fields */
-    padding: 10px;
-    width: 100%; /* Input fields will fill the container's width */
-    max-width: 200px; /* Set your desired max-width for the input fields */
-    margin: 10px 0; /* Adjust margin to separate input fields with equal space */
-  }
-  
-  .container button {
-    background-color: #203864;
-    color: white;
-    border: 3px solid white; /* Add border for the login button */
-    border-radius: 30px; /* Add roundness to the login button */
-    padding: 5px;
-    width: 100%; /* Make the login button fill the container's width */
-    max-width: 100px; /* Set your desired max-width for the login button */
-    margin: 10px 60px; /* Add margin to separate the login button from the input fields */
-    cursor: pointer;
-  }
-  
-  .container button:hover {
-    background-color: #09c1ff;
-  }
-  
-  /* Additional styles to limit the size of the window */
-  @media screen and (max-width: 600px) {
-    .container {
-      width: 90%; /* Adjust the width of the container for smaller screens */
-    }
-  }
+.logo-container img {
+  max-width: 70%;
+  height: auto;
+}
 
-  
-  /* Additional styles for h2, label, button, and message */
-h2, label, button, #message {
-    color: white;
-    text-align: center;
-    margin-bottom: 20px;
-  }
+.input-fields-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
 
-/* Add styles for the footer */
+.container input {
+  background-color: transparent;
+  border: 3px solid white;
+  color: white;
+  border-radius: 30px;
+  padding: 2%;
+  width: 100%;
+  max-width: 200px;
+  margin: 2% 0;
+}
+
+.container button {
+  background-color: #203864;
+  color: white;
+  border: 3px solid white;
+  border-radius: 30px;
+  padding: 5px;
+  width: 100%;
+  max-width: 20%;
+  margin: 10px 60px;
+  cursor: pointer;
+}
+
+.container button:hover {
+  background-color: #09c1ff;
+}
+
+h2,
+label,
+button,
+#message {
+  color: white;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
 .footer {
   font-family: 'Ubuntu', sans-serif;
   position: fixed;
@@ -113,10 +96,22 @@ h2, label, button, #message {
   left: 0;
   font-size: 10px;
   width: 100%;
-  background-color: transparent; /* Set the background color to transparent */
+  background-color: transparent;
   color: #fff;
   text-align: center;
-  padding: 10px 0;
+  margin-top: 10%;
 }
 
+/* Media query for 1080p screens */
+@media screen and (min-width: 1920px) {
+  .container {
+    max-width: 40%;
+  }
+}
 
+/* Media query for 4K screens */
+@media screen and (min-width: 3840px) {
+  .container {
+    max-width: 20%;
+  }
+}

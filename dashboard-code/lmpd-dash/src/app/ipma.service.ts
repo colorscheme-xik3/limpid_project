@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class IpmaService {
   private apiUrl = 'http://api.ipma.pt/open-data/forecast/oceanography/daily/hp-daily-sea-forecast-day0.json';
+  private TempUrl = 'http://api.ipma.pt/open-data/forecast/meteorology/cities/daily/hp-daily-forecast-day0.json';
 
   constructor(private http: HttpClient) {}
 
@@ -14,4 +15,12 @@ export class IpmaService {
     const url = `${this.apiUrl}?globalIdLocal=${globalIdLocal}`;
     return this.http.get(url);
   }
+
+  getTempConditions(globalIdLocal: number): Observable<any> {
+    const url = `${this.TempUrl}?globalIdLocal=${globalIdLocal}`;
+    return this.http.get(url);
+  }
+
+  
+  
 }

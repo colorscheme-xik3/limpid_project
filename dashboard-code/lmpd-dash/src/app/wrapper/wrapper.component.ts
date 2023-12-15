@@ -2,6 +2,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
+import { IpmaService } from 'src/app/ipma.service';
+
 
 @Component({
   selector: 'app-wrapper',
@@ -9,9 +11,31 @@ import { Router } from '@angular/router';
   styleUrls: ['./wrapper.component.css', './weather.css']
 })
 export class WrapperComponent implements OnInit {
-  constructor(private auth: AngularFireAuth, private router: Router) {}
+  user: any; // Assuming you have a variable to store user information
+  tempConditions: any;
 
-  ngOnInit(): void {}
+  constructor(private auth: AngularFireAuth, private router: Router, private ipma: IpmaService) {}
+
+  ngOnInit(): void {
+    this.auth.user.subscribe((user) => {
+      this.user = user;
+
+      // Fetch sea conditions when the component initializes
+      if (user) {
+        this.fetchTempConditions();
+      }
+    });
+  }
+
+  fetchTempConditions(): void {
+    // Replace '1111026' with your desired globalIdLocal
+    this.ipma.getTempConditions(1151200).subscribe((data) => {
+      // Filter the data based on globalIdLocal
+      this.tempConditions = data.data.filter((condition: { globalIdLocal: number }) => condition.globalIdLocal === 1151200);
+      // Log the filtered data to the console
+      console.log('Filtered Temp Conditions:', this.tempConditions);
+    });
+  }
 
   logout(): void {
     // Your logout logic, for example, using AngularFireAuth

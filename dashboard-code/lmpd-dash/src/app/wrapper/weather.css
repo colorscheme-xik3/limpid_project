@@ -2,6 +2,14 @@
 @import "./wrapper.component.css";
 
 
+.weather-container {
+	position: relative;
+	margin-top: 10%;
+	margin-bottom: 10%;
+	display: flex;
+	align-items: center;
+  }
+
 .sun-wrapper {
     position: relative;
     margin-top: 20%;
@@ -429,4 +437,12 @@
 		top: 75%;
 		opacity: 0;
 	}
+}
+
+@media screen and (min-width: 1920px) {
+    .weather-container {
+		margin-top: 60%;
+		margin-bottom: 60%;
+	  }
+    
 }

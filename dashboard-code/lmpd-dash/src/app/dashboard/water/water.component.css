@@ -2,6 +2,9 @@
 
 .main-container {
   display: flex;
+  width: 81%;
+  height: 90vh;
+  margin-left: 15%;
   flex-direction: column; /* Stack contents vertically */
   background-color: #212121; /* Replace with your desired background color */
 }
@@ -9,29 +12,33 @@
 .container {
   display: flex;
   background-color: transparent;
-  padding: 40px;
+  padding: 20px;
   border-radius: 10px 10px 0 0;
+  
 }
 
 .card {
   display: flex;
-  position: relative;
-  width: 200px;
-  height: 100px;
   flex-direction: column;
-  background: rgb(17, 4, 134);
-  border-radius: 15px;
-  box-shadow: rgb(0, 0, 0, 0.7) 5px 10px 20px, rgb(0, 0, 0, 0.7) -5px 0px 20px;
+  width: 200px;
+  height: 100px; /* Set a fixed height for the cards */
   background: linear-gradient(to right, rgb(20, 30, 48), #103F91);
+  border-radius: 15px;
+  box-shadow: 5px 10px 20px rgba(0, 0, 0, 0.7), -5px 0px 20px rgba(0, 0, 0, 0.7);
   cursor: pointer;
   transition: all 0.3s ease-in-out;
-  overflow: show;
+  overflow: hidden;
   margin-right: 2%;
 }
 
+/* Add margin between the two blocks */
+.container > div:not(:last-child) {
+  margin-right: 20px; /* Adjust the margin between the two blocks */
+}
+
 .card-text {
-  font-size: 30px;
-  margin-top: 20%;
+  font-size: 1.5em; /* Adjusted font size */
+  margin-top: 20px; /* Adjusted margin */
   margin-left: 15px;
   font-weight: 600;
   color: white; /* Ensure text is visible against the dark background */
@@ -46,7 +53,7 @@
 
 .under-text {
   font-size: 15px;
-  margin-top: -20%;
+  margin-top: -20px; /* Adjusted margin */
   margin-left: 15px;
   color: white; /* Ensure text is visible against the dark background */
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -54,7 +61,6 @@
 
 .moon-checkbox {
   display: none;
-  
 }
 
 .moon-label {
@@ -63,8 +69,8 @@
   background-color: transparent;
   border: 2px solid white; /* Adjust border color and size as needed */
   border-radius: 50%;
-  position: flex;
-  top: 20%; /* Adjust the distance from the top */
+  position: relative; /* Changed position to relative */
+  top: 0%; /* Adjust the distance from the top */
   left: 90%; /* Adjust the distance from the right */
   cursor: pointer;
 }
@@ -102,4 +108,31 @@ label {
 .chart {
   max-width: 100%; /* Allow charts to take full width of their container */
   height: 300px; /* Set a fixed height for charts */
+}
+
+@media screen and (min-width: 1920px) {
+
+  .main-container {
+    display: flex;
+    width: 164vh;
+    margin-left:12%;
+    height: 93vh;
+  }
+
+  .container {
+    background-color: transparent;
+    border-radius: 10px 10px 0 0;
+    width: 300vh;
+  }
+
+  .card {
+    width: 300px;
+    height: 100px; /* Set a fixed height for the cards */
+  }
+
+  .container > div:not(:last-child) {
+    margin-right: 20px; /* Adjust the margin between the two blocks */
+  }
+  
+  
 }
