@@ -37,6 +37,19 @@ export class WrapperComponent implements OnInit {
     });
   }
 
+  getWeatherClass(tMax: number | undefined): string {
+
+    if (tMax === undefined) {
+      return ''; // or a default class if necessary
+    } else if (tMax < 10) {
+      return 'snowe';
+    } else if (tMax > 30) {
+      return 'hot';
+    } else {
+      return 'cloudy';
+    }
+  }
+
   logout(): void {
     // Your logout logic, for example, using AngularFireAuth
     this.auth.signOut().then(() => {
