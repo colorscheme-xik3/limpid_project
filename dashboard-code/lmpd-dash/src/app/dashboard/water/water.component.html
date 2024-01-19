@@ -2,12 +2,12 @@
   <div class="container">
 
     <div *ngIf="sensorValues$ | async as sensorValues">
-      <div *ngIf="lastTimestamp">
-        <!-- Temperature Card -->
+      <div *ngFor="let timestamp of lastTimestamp">
+                <!-- Temperature Card -->
         <div class="card" id="temp">
           <p class="card-text">
-            <span>{{ sensorValues[lastTimestamp]['Temperature'] | slice: 0:-1 }}</span>
-            <span class="card-sub-text">ºC</span>
+            <span>{{ sensorValues[timestamp]?.Temperature | slice: 0:-1 }}</span>
+                        <span class="card-sub-text">ºC</span>
           </p>
           <p class="under-text">Temperature</p>
           <input type="checkbox" id="tCheckbox" class="moon-checkbox">
@@ -17,11 +17,11 @@
     </div>
 
     <div *ngIf="sensorValues$ | async as sensorValues">
-      <div *ngIf="lastTimestamp">
+      <div *ngFor="let timestamp of lastTimestamp">
         <!-- pH Card -->
         <div class="card" id="ph">
           <p class="card-text">
-            <span>{{ sensorValues[lastTimestamp]['Potential Hydrogen'] | slice: 0:-1 }}</span>
+            <span>{{ sensorValues[timestamp]?.['Potential Hydrogen'] | slice: 0:-1 }}</span>
             <span class="card-sub-text">pH</span>
           </p>
           <p class="under-text">Potential Hydrogen</p>
@@ -61,7 +61,6 @@
   <div class="chart-grid">
     <!-- Add more squares as needed -->
     <div class="chart" id="chart1"></div>
-    <div class="chart" id="chart2"></div>
   </div>
 
 </div>

@@ -1,124 +1,10 @@
-
-
-  
-    
-    /*
-  
-    // Sample data for the first chart
-    const chartData1 = {
-      series: [
-        {
-          name: "High - 2013",
-          data: [28, 29, 33, 36, 32, 32, 33]
-        },
-        {
-          name: "Low - 2013",
-          data: [12, 11, 14, 18, 17, 13, 13]
-        }
-      ],
-      chart: {
-        height: 350,
-        type: 'line',
-        dropShadow: {
-          enabled: true,
-          color: '#000',
-          top: 18,
-          left: 7,
-          blur: 10,
-          opacity: 0.2
-        },
-        toolbar: {
-          show: false
-        }
-      },
-      colors: ['#77B6EA', '#545454'],
-      dataLabels: {
-        enabled: true,
-      },
-      stroke: {
-        curve: 'smooth'
-      },
-      title: {
-        text: 'Average High & Low Temperature',
-        align: 'left'
-      },
-      grid: {
-        borderColor: '#e7e7e7',
-        row: {
-          colors: ['#f3f3f3', 'transparent'],
-          opacity: 0.5
-        },
-      },
-      markers: {
-        size: 1
-      },
-      xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-        title: {
-          text: 'Month'
-        }
-      },
-      yaxis: {
-        title: {
-          text: 'Temperature'
-        },
-        min: 5,
-        max: 40
-      },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'right',
-        floating: true,
-        offsetY: -25,
-        offsetX: -5
-      },
-      tooltip: {
-        shared: true,
-        intersect: false,
-        theme: 'dark',
-      },
-    };
-
-    // Create an ApexCharts instance for the first chart
-    const chart1 = new ApexCharts(document.getElementById('chart1'), chartData1);
-
-    // Render the first chart
-    chart1.render();
-
-    // Sample data for the second chart
-    const chartData2 = {
-      series: [{
-        name: 'Sample Series 2',
-        data: [20, 35, 50, 65, 80, 95, 110, 125, 140],
-      }],
-      chart: {
-        type: 'bar',
-        height: 350,
-        // Apply the dark mode theme
-        background: 'rgba(0, 0, 0, 0.5)', // Set background color
-      },
-      tooltip: {
-        theme: 'dark',
-      },
-      xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
-      },
-    };
-
-    // Create an ApexCharts instance for the second chart
-    const chart2 = new ApexCharts(document.getElementById('chart2'), chartData2);
-
-    // Render the second chart
-    chart2.render();
-  }
-  */
-
 // water.component.ts
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { switchMap, startWith, distinctUntilChanged } from 'rxjs/operators';
+import ApexCharts from 'apexcharts';
 
 @Component({
   selector: 'app-water',
@@ -127,9 +13,10 @@ import { switchMap, startWith, distinctUntilChanged } from 'rxjs/operators';
 })
 export class WaterComponent implements OnInit {
   sensorValues$: Observable<{ [key: string]: { "Temperature": string, "Potential Hydrogen": string } }> | null = null;
-  lastTimestamp: string | null = null;
-
+  lastTimestamp: string[] | null = null;
+  lastFiveTimestamps: string[] | null = null;
   private sensorValuesSubject = new BehaviorSubject<{ [key: string]: { Temperature: string, "Potential Hydrogen": string } } | null>(null);
+  private chart: ApexCharts | null = null;
 
   constructor(private db: AngularFireDatabase, private afAuth: AngularFireAuth) {}
 
@@ -156,7 +43,11 @@ export class WaterComponent implements OnInit {
       this.sensorValuesSubject.next(sensorValues || null);
 
       // Get the last timestamp when sensorValues are received
-      this.lastTimestamp = this.getLastTimestamp(sensorValues);
+      this.lastTimestamp = this.getLastTimestamps(sensorValues, 1);
+      this.lastFiveTimestamps = this.getLastTimestamps(sensorValues, 5);
+      // Initialize and render ApexCharts when sensorValues are received
+      this.initializeChart();
+
     });
   }
 
@@ -164,11 +55,137 @@ export class WaterComponent implements OnInit {
     return this.db.object<any>(path).valueChanges();
   }
 
-  private getLastTimestamp(sensorValues: { [key: string]: { Temperature: string, "Potential Hydrogen": string } }): string | null {
+  private getLastTimestamps(sensorValues: { [key: string]: { Temperature: string, "Potential Hydrogen": string } }, n: number): string[] | null {
     const timestamps = Object.keys(sensorValues || {});
-    return timestamps.length > 0 ? timestamps[timestamps.length - 1] : null;
+    const length = timestamps.length;
+
+    if (length >= n) {
+      return timestamps.slice(-n);
+    } else if (length === 1) {
+      // If there's only one timestamp, return an array with the same timestamp (no nth-to-last)
+      return [timestamps[0]];
+    } else {
+      // No timestamps or not enough timestamps
+      return null;
+    }
+  }
+
+  private initializeChart() {
+    // Use this.lastFiveTimestamps to filter the data for the last 5 timestamps when updating the chart
+    if (this.lastFiveTimestamps && this.lastFiveTimestamps.length > 0 && this.sensorValuesSubject) {
+      const filteredSensorValues = this.lastFiveTimestamps.map(timestamp => {
+        const sensorValue = this.sensorValuesSubject.value;
+
+        // Assert that sensorValue is not null before accessing properties
+        if (sensorValue) {
+          return {
+            Timestamp: timestamp,
+            ...sensorValue[timestamp] // Assuming the structure of your sensor values
+          };
+        }
+
+        return null; // Handle the case where sensorValue is null
+      }).filter(entry => entry !== null) as { Timestamp: string; Temperature: string; "Potential Hydrogen": string }[];
+
+      // Assuming you have a chart variable declared in your class
+      if (!this.chart) {
+        // Create an ApexCharts instance for the chart
+        this.chart = new ApexCharts(document.getElementById('chart1'), this.getChartOptions());
+        // Render the chart
+        this.chart.render();
+      } else {
+        // Update the chart data
+        this.chart.updateSeries([
+          {
+            name: 'Temperature',
+            data: filteredSensorValues.map(entry => parseFloat(entry.Temperature)),
+          },
+          {
+            name: 'Potential Hydrogen',
+            data: filteredSensorValues.map(entry => parseFloat(entry["Potential Hydrogen"])),
+          },
+        ]);
+        // Update the x-axis labels
+        this.chart.updateOptions({
+          xaxis: {
+            categories: filteredSensorValues.map(entry => entry.Timestamp),
+          },
+        });
+      }
+    } else {
+      // Handle the case where there are no timestamps or not enough timestamps to update the chart
+      console.warn('Not enough timestamps to update the chart.');
+    }
+  }
+
+  private getChartOptions(): ApexCharts.ApexOptions {
+    return {
+      series: [],
+      chart: {
+        height: 450,
+        type: 'area',
+        toolbar: {
+          show: false,
+        },
+      },
+      colors: ['#008000', '#f5b74f'],
+      dataLabels: {
+        enabled: true,
+        style: {
+          colors: ['#008080', '#008080'],
+        },
+      },
+      stroke: {
+        curve: 'smooth',
+      },
+      labels: [],
+      markers: {
+        size: 0,
+      },
+      xaxis: {
+        labels: {
+          style: {
+            colors: '#FFFFFF',
+          },
+        },
+      },
+      yaxis: [
+        {
+          title: {
+            text: 'Temperature',
+            style: {
+              color: '#008080',
+            },
+          },
+          labels: {
+            style: {
+              colors: '#008080',
+            },
+          },
+        },
+        {
+          opposite: true,
+          title: {
+            text: 'Potential Hydrogen (pH)',
+            style: {
+              color: '#FFFFFF',
+            },
+          },
+          labels: {
+            style: {
+              colors: '#f5b74f',
+            },
+          },
+        },
+      ],
+      tooltip: {
+        shared: true,
+        intersect: false,
+        style: {
+          fontSize: '12px',
+        },
+        theme: 'dark',
+      },
+    };
   }
 }
-
-
-

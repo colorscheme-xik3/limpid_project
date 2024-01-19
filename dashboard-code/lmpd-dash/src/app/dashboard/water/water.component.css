@@ -1,26 +1,25 @@
 @import '../../wrapper/wrapper.component.css';
 
 .main-container {
-  display: flex;
-  width: 81%;
-  height: 90vh;
-  margin-left: 15%;
+  display: block;
+  width: 87%;
+  height: 100vh;
+  margin-left: 10%;
   flex-direction: column; /* Stack contents vertically */
   background-color: #212121; /* Replace with your desired background color */
 }
 
 .container {
   display: flex;
-  background-color: transparent;
-  padding: 20px;
-  border-radius: 10px 10px 0 0;
+  margin-left: 10%;
+  padding: 20px;  
   
 }
 
 .card {
   display: flex;
   flex-direction: column;
-  width: 200px;
+  width: 190px;
   height: 100px; /* Set a fixed height for the cards */
   background: linear-gradient(to right, rgb(20, 30, 48), #103F91);
   border-radius: 15px;
@@ -38,7 +37,8 @@
 
 .card-text {
   font-size: 1.5em; /* Adjusted font size */
-  margin-top: 20px; /* Adjusted margin */
+  width: 100%;
+  margin-top: 10%; /* Adjusted margin */
   margin-left: 15px;
   font-weight: 600;
   color: white; /* Ensure text is visible against the dark background */
@@ -53,7 +53,7 @@
 
 .under-text {
   font-size: 15px;
-  margin-top: -20px; /* Adjusted margin */
+  margin-top: 10px; /* Adjusted margin */
   margin-left: 15px;
   color: white; /* Ensure text is visible against the dark background */
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -99,15 +99,14 @@ label {
 }
 
 .chart-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 columns with equal width */
-  gap: 20px; /* Gap between charts */
-  padding: 3vw; /* Padding as a percentage of the viewport width */
+  display: block;
+  margin-left: 100px;
+
 }
 
 .chart {
-  max-width: 100%; /* Allow charts to take full width of their container */
-  height: 300px; /* Set a fixed height for charts */
+  width: auto; /* Allow charts to take full width of their container */
+  height: auto; /* Set a fixed height for charts */
 }
 
 @media screen and (min-width: 1920px) {
