@@ -1,4 +1,3 @@
-// water.component.ts
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
@@ -17,6 +16,8 @@ export class WaterComponent implements OnInit {
   lastFiveTimestamps: string[] | null = null;
   private sensorValuesSubject = new BehaviorSubject<{ [key: string]: { Temperature: string, "Potential Hydrogen": string } } | null>(null);
   private chart: ApexCharts | null = null;
+  showTemperature: boolean = true; // Variable to control temperature visibility
+  showPotentialHydrogen: boolean = true; // Variable to control potential hydrogen visibility
 
   constructor(private db: AngularFireDatabase, private afAuth: AngularFireAuth) {}
 
@@ -45,11 +46,79 @@ export class WaterComponent implements OnInit {
       // Get the last timestamp when sensorValues are received
       this.lastTimestamp = this.getLastTimestamps(sensorValues, 1);
       this.lastFiveTimestamps = this.getLastTimestamps(sensorValues, 5);
+
       // Initialize and render ApexCharts when sensorValues are received
       this.initializeChart();
 
+      // Update the chart when sensorValues are received
+      this.updateChart();
     });
   }
+
+  updateChart() {
+  if (this.chart && this.lastFiveTimestamps && this.lastFiveTimestamps.length > 0 && this.sensorValuesSubject) {
+    const filteredSensorValues = this.lastFiveTimestamps.map(timestamp => {
+      const sensorValue = this.sensorValuesSubject.value;
+      const entry: { Timestamp: string, Temperature?: number, "Potential Hydrogen"?: number } = { Timestamp: timestamp };
+
+      // Assert that sensorValue is not null before accessing properties
+      if (sensorValue) {
+        if (this.showTemperature) {
+          entry.Temperature = parseFloat(sensorValue[timestamp]?.Temperature);
+        }
+        if (this.showPotentialHydrogen) {
+          entry["Potential Hydrogen"] = parseFloat(sensorValue[timestamp]?.['Potential Hydrogen']);
+        }
+      }
+
+      return entry;
+    });
+
+    // Define the series type explicitly
+    interface Series {
+      name: string;
+      data: (number | null)[];
+    }
+
+    // Ensure both series are present in the chart data
+    const series: Series[] = [];
+    if (this.showTemperature) {
+      series.push({
+        name: 'Temperature',
+        data: filteredSensorValues.map(entry => entry.Temperature ?? null),
+      });
+    }
+    if (this.showPotentialHydrogen) {
+      series.push({
+        name: 'Potential Hydrogen',
+        data: filteredSensorValues.map(entry => entry["Potential Hydrogen"] ?? null),
+      });
+    }
+
+    this.chart.updateSeries(series.filter(s => s.data.some(val => val !== null))); // Filter out series with all null values
+
+    // Update the x-axis labels
+    this.chart.updateOptions({
+      xaxis: {
+        categories: filteredSensorValues.map(entry => entry.Timestamp),
+      },
+    });
+
+    // Update the data labels based on checked checkboxes
+    this.chart.updateOptions({
+      dataLabels: {
+        enabledOnSeries: series.map((s, index) => index).filter(i => series[i].data.some(val => val !== null)),
+      },
+    });
+  } else {
+    // Handle the case where there are no timestamps or not enough timestamps to update the chart
+    console.warn('Not enough timestamps to update the chart.');
+  }
+}
+
+  
+  
+  
 
   private getData(path: string): Observable<any> {
     return this.db.object<any>(path).valueChanges();
@@ -71,50 +140,11 @@ export class WaterComponent implements OnInit {
   }
 
   private initializeChart() {
-    // Use this.lastFiveTimestamps to filter the data for the last 5 timestamps when updating the chart
-    if (this.lastFiveTimestamps && this.lastFiveTimestamps.length > 0 && this.sensorValuesSubject) {
-      const filteredSensorValues = this.lastFiveTimestamps.map(timestamp => {
-        const sensorValue = this.sensorValuesSubject.value;
-
-        // Assert that sensorValue is not null before accessing properties
-        if (sensorValue) {
-          return {
-            Timestamp: timestamp,
-            ...sensorValue[timestamp] // Assuming the structure of your sensor values
-          };
-        }
-
-        return null; // Handle the case where sensorValue is null
-      }).filter(entry => entry !== null) as { Timestamp: string; Temperature: string; "Potential Hydrogen": string }[];
-
-      // Assuming you have a chart variable declared in your class
-      if (!this.chart) {
-        // Create an ApexCharts instance for the chart
-        this.chart = new ApexCharts(document.getElementById('chart1'), this.getChartOptions());
-        // Render the chart
-        this.chart.render();
-      } else {
-        // Update the chart data
-        this.chart.updateSeries([
-          {
-            name: 'Temperature',
-            data: filteredSensorValues.map(entry => parseFloat(entry.Temperature)),
-          },
-          {
-            name: 'Potential Hydrogen',
-            data: filteredSensorValues.map(entry => parseFloat(entry["Potential Hydrogen"])),
-          },
-        ]);
-        // Update the x-axis labels
-        this.chart.updateOptions({
-          xaxis: {
-            categories: filteredSensorValues.map(entry => entry.Timestamp),
-          },
-        });
-      }
-    } else {
-      // Handle the case where there are no timestamps or not enough timestamps to update the chart
-      console.warn('Not enough timestamps to update the chart.');
+    if (!this.chart) {
+      // Create an ApexCharts instance for the chart
+      this.chart = new ApexCharts(document.getElementById('chart1'), this.getChartOptions());
+      // Render the chart
+      this.chart.render();
     }
   }
 
@@ -132,7 +162,7 @@ export class WaterComponent implements OnInit {
       dataLabels: {
         enabled: true,
         style: {
-          colors: ['#008080', '#008080'],
+          colors: ['#008080', '#f5b74f'],
         },
       },
       stroke: {
@@ -152,7 +182,6 @@ export class WaterComponent implements OnInit {
       yaxis: [
         {
           title: {
-            text: 'Temperature',
             style: {
               color: '#008080',
             },
@@ -166,9 +195,8 @@ export class WaterComponent implements OnInit {
         {
           opposite: true,
           title: {
-            text: 'Potential Hydrogen (pH)',
             style: {
-              color: '#FFFFFF',
+              color: '#f5b74f',
             },
           },
           labels: {

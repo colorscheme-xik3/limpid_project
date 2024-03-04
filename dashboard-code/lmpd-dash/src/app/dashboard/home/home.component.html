@@ -5,17 +5,20 @@
       <h1>{{ getGreeting() }}</h1>
       <p>Welcome to LIMPID dashboard for Varuna5.</p>
       <div class="image-container">
-        <img src="../../assets/images-pcb/ESP32..png" alt="Your Image Alt Text">
+        <img src="../../assets/images-pcb/ESP32.F_white.png" alt="Your Image Alt Text">
+      </div>
+    </div>
+
+    <div class="side-panel">
+      <div *ngIf="seaConditions">
+        <div *ngFor="let condition of seaConditions" class="weather-rectangle">
+          <h3>Sea surface temperature</h3>
+          <p class="weather-info">
+            {{ condition.sstMin }}°C - {{ condition.sstMax }}°C
+          </p>
+        </div>
       </div>
     </div>
   </div>
-  <div class="side-panel">
-    <div *ngIf="seaConditions">
-      <div *ngFor="let condition of seaConditions" class="weather-rectangle">
-        <h3>Sea surface temperature</h3>
-        <p class="weather-info">
-          {{ condition.sstMin }}°C - {{ condition.sstMax }}°C
-        </p>
-      </div>
-    </div>
+
   

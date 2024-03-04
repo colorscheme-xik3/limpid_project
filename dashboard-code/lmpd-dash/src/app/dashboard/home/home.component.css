@@ -2,32 +2,31 @@
 
 
 .main-container {
-  display: flex;
-  width: 81%;
-  height: 90vh;
+
+  /* background: url('/assets/images-home/background_home.jpg') center center / cover no-repeat; */
+
+  display: block;
+  width: 87%;
+  border-radius: 0; /* Remove the border radius */
+  height: 100vh;
   margin-left: 15%;
-  background: url('/assets/images-home/background_home.jpg') center center / cover no-repeat; 
+  background-color: #212121; /* Replace with your desired background color */
 }
 
 .container {
-  background-color: transparent;
-  border-radius: 10px 10px 0 0;
-  width: 300vh;
+  display: flex;
 }
 
 .side-panel {
   margin-top: 5%;
-  width: 80%; /* Adjust the width as needed */
-  background-color: transparent;
+  width: 30%; /* Adjust the width as needed */
   margin-left: 10%;
 }
 
 .weather-rectangle {
     background-color: #212121;
     margin-bottom: 30px;
-    padding: 10px;
     border-radius: 10px 10px 10px 10px;
-
   }
   
   .weather-rectangle h3 {

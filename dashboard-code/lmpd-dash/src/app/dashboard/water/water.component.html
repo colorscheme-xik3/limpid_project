@@ -3,14 +3,14 @@
 
     <div *ngIf="sensorValues$ | async as sensorValues">
       <div *ngFor="let timestamp of lastTimestamp">
-                <!-- Temperature Card -->
+        <!-- Temperature Card -->
         <div class="card" id="temp">
           <p class="card-text">
             <span>{{ sensorValues[timestamp]?.Temperature | slice: 0:-1 }}</span>
-                        <span class="card-sub-text">ºC</span>
+            <span class="card-sub-text">ºC</span>
           </p>
           <p class="under-text">Temperature</p>
-          <input type="checkbox" id="tCheckbox" class="moon-checkbox">
+          <input type="checkbox" id="tCheckbox" class="moon-checkbox" [(ngModel)]="showTemperature" (change)="updateChart()">
           <label for="tCheckbox" class="moon-label"></label>
         </div>
       </div>
@@ -25,31 +25,29 @@
             <span class="card-sub-text">pH</span>
           </p>
           <p class="under-text">Potential Hydrogen</p>
-          <input type="checkbox" id="phCheckbox" class="moon-checkbox">
+          <input type="checkbox" id="phCheckbox" class="moon-checkbox" [(ngModel)]="showPotentialHydrogen" (change)="updateChart()">
           <label for="phCheckbox" class="moon-label"></label>
         </div>
       </div>
     </div>
-        <!-- Add more cards as needed -->
-   
-    
-  
+    <!-- Add more cards as needed -->
+
     <div class="card" id="tds">
-      <p class="card-text"><span>--</span><span class="card-sub-text"> ppm</span></p>
+      <p class="card-text"><span>1500</span><span class="card-sub-text"> ppm</span></p>
       <p class="under-text">Total Dissolved Solids</p>
       <input type="checkbox" id="tdsCheckbox" class="moon-checkbox">
       <label for="tdsCheckbox" class="moon-label"></label>
     </div>
 
     <div class="card" id="do">
-      <p class="card-text"><span>--</span><span class="card-sub-text">mg/L</span></p>
+      <p class="card-text"><span>1500</span><span class="card-sub-text">mg/L</span></p>
       <p class="under-text">Dissolved Oxygen</p>
       <input type="checkbox" id="doCheckbox" class="moon-checkbox">
       <label for="doCheckbox" class="moon-label"></label>
     </div>
 
     <div class="card" id="turb">
-      <p class="card-text"><span>--</span><span class="card-sub-text"></span></p>
+      <p class="card-text"><span>1500</span><span class="card-sub-text"></span></p>
       <p class="under-text">Turbidity</p>
       <input type="checkbox" id="turbCheckbox" class="moon-checkbox">
       <label for="turbCheckbox" class="moon-label"></label>
@@ -61,6 +59,14 @@
   <div class="chart-grid">
     <!-- Add more squares as needed -->
     <div class="chart" id="chart1"></div>
-  </div>
+    <div class="chart" id="chart2">
+      <div class="toolbox">
 
+        <button>Graph</button>
+        <button>Graph</button>
+        <button>Graph</button>
+
+      </div>
+    </div>
+  </div>
 </div>

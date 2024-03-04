@@ -11,7 +11,7 @@
 
 .container {
   display: flex;
-  margin-left: 10%;
+  margin-left: 5%;
   padding: 20px;  
   
 }
@@ -99,15 +99,62 @@ label {
 }
 
 .chart-grid {
-  display: block;
-  margin-left: 100px;
-
+  display: flex;
+  margin-left: 5%;
+  
 }
 
 .chart {
-  width: auto; /* Allow charts to take full width of their container */
+  flex: 1; /* Each chart will take up equal space */
   height: auto; /* Set a fixed height for charts */
+  margin-left: 2%;
+
 }
+
+.chart:first-child {
+  flex: 8; /* 70% width for the first chart */
+  margin-left: 15px;
+  background: linear-gradient(to right, rgb(20, 30, 48), #103F91);
+  border-radius: 15px;
+  box-shadow: 5px 10px 20px rgba(0, 0, 0, 0.7), -5px 0px 20px rgba(0, 0, 0, 0.7);
+}
+
+.chart:last-child {
+  flex: 2; /* 30% width for the last chart */
+  /*background: linear-gradient(to right, rgb(20, 30, 48), #85a0ce);*/
+  border-radius: 10px;
+  /*box-shadow: 5px 10px 20px rgba(0, 0, 0, 0.7), -5px 0px 20px rgba(0, 0, 0, 0.7);*/
+}
+
+
+.toolbox {
+  font-family: 'Ubuntu', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.toolbox button {
+  font-family: 'Ubuntu', sans-serif;
+  width: 30%;
+  height: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the text horizontally */
+  background-color: #f4faff;
+  border-radius: 10px;
+  color: #103F91;
+  border: none;
+  position: relative;
+  cursor: pointer;
+  transition-duration: .2s;
+}
+
+.toolbox button:hover {
+  background-color: #93acff;
+  transition-duration: .2s;
+}
+
 
 @media screen and (min-width: 1920px) {
 
