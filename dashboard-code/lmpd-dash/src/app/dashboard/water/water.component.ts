@@ -18,6 +18,7 @@ export class WaterComponent implements OnInit {
   private chart: ApexCharts | null = null;
   showTemperature: boolean = true; // Variable to control temperature visibility
   showPotentialHydrogen: boolean = true; // Variable to control potential hydrogen visibility
+  selectedDuration: string = ''; // Initialized with an empty string
 
   constructor(private db: AngularFireDatabase, private afAuth: AngularFireAuth) {}
 
@@ -45,8 +46,8 @@ export class WaterComponent implements OnInit {
 
       // Get the last timestamp when sensorValues are received
       this.lastTimestamp = this.getLastTimestamps(sensorValues, 1);
-      this.lastFiveTimestamps = this.getLastTimestamps(sensorValues, 5);
-
+      this.lastFiveTimestamps = this.getLastTimestamps(sensorValues,  parseInt(this.selectedDuration, 10));
+      console.log('Duration:',  parseInt(this.selectedDuration, 10));
       // Initialize and render ApexCharts when sensorValues are received
       this.initializeChart();
 

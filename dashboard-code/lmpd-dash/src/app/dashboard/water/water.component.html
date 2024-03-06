@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <div class="main-container">
   <div class="container">
 
@@ -61,10 +62,36 @@
     <div class="chart" id="chart1"></div>
     <div class="chart" id="chart2">
       <div class="toolbox">
+        
+        <div class="card_display">
+          <div class="display">
+            <span class="material-icons">
+              water_drop
+            </span>
+            <div class="display_text">
+              Saltwater - {{ selectedDuration }} days
+            </div>
+  
+         
+          </div>
+        </div>
 
-        <button>Graph</button>
-        <button>Graph</button>
-        <button>Graph</button>
+        <div class="radio-input">
+          <input type="radio" id="value-1" name="value-radio" value="5" [(ngModel)]="selectedDuration">
+          <div class="circle"></div>
+        
+          <input type="radio" id="value-2" name="value-radio" value="10" [(ngModel)]="selectedDuration">
+          <div class="circle"></div>
+        
+          <input type="radio" id="value-3" name="value-radio" value="30" [(ngModel)]="selectedDuration">
+          <div class="circle"></div>
+        </div>
+        
+         
+        
+        <button>graph</button>
+        <button>full</button>
+
 
       </div>
     </div>
