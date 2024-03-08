@@ -77,14 +77,27 @@
         </div>
 
         <div class="radio-input">
-          <input type="radio" id="value-1" name="value-radio" value="5" [(ngModel)]="selectedDuration">
+          <input type="radio" id="value-1" name="value-radio" value="5" [(ngModel)]="selectedDuration" (change)="onDurationChange()">
           <div class="circle"></div>
         
-          <input type="radio" id="value-2" name="value-radio" value="10" [(ngModel)]="selectedDuration">
+          <input type="radio" id="value-2" name="value-radio" value="10" [(ngModel)]="selectedDuration" (change)="onDurationChange()">
           <div class="circle"></div>
         
-          <input type="radio" id="value-3" name="value-radio" value="30" [(ngModel)]="selectedDuration">
+          <input type="radio" id="value-3" name="value-radio" value="30" [(ngModel)]="selectedDuration" (change)="onDurationChange()">
           <div class="circle"></div>
+        </div>
+
+
+        
+        <div class="radio-input">
+          <input type="radio" id="graph-1" name="graph-radio">
+          <div class="circle_graph"></div>
+        
+          <input type="radio" id="graph-2" name="graph-radio">
+          <div class="circle_graph"></div>
+        
+          <input type="radio" id="graph-3" name="graph-radio">
+          <div class="circle_graph"></div>
         </div>
         
          

@@ -12,6 +12,7 @@ import ApexCharts from 'apexcharts';
 })
 export class WaterComponent implements OnInit {
   sensorValues$: Observable<{ [key: string]: { "Temperature": string, "Potential Hydrogen": string } }> | null = null;
+  private latestSensorValues: { [key: string]: { Temperature: string, "Potential Hydrogen": string } } | null = null;
   lastTimestamp: string[] | null = null;
   lastFiveTimestamps: string[] | null = null;
   private sensorValuesSubject = new BehaviorSubject<{ [key: string]: { Temperature: string, "Potential Hydrogen": string } } | null>(null);
@@ -23,6 +24,11 @@ export class WaterComponent implements OnInit {
   constructor(private db: AngularFireDatabase, private afAuth: AngularFireAuth) {}
 
   ngOnInit() {
+
+    if (!this.selectedDuration) {
+      this.selectedDuration = '5'; // Set default value if selectedDuration is empty
+    }
+  
     console.log('Initializing WaterComponent');
     this.sensorValues$ = this.afAuth.authState.pipe(
       switchMap(user => {
@@ -42,6 +48,7 @@ export class WaterComponent implements OnInit {
 
     this.sensorValues$.subscribe(sensorValues => {
       console.log('Received sensorValues:', sensorValues);
+      this.latestSensorValues = sensorValues || null; // Store the latest sensorValues
       this.sensorValuesSubject.next(sensorValues || null);
 
       // Get the last timestamp when sensorValues are received
@@ -53,14 +60,28 @@ export class WaterComponent implements OnInit {
 
       // Update the chart when sensorValues are received
       this.updateChart();
+
+    
     });
   }
+
+  onDurationChange() {
+    console.log('Selected Duration:', this.selectedDuration); // Log the selected duration
+    if (this.latestSensorValues) {
+      this.lastFiveTimestamps = this.getLastTimestamps(this.latestSensorValues, parseInt(this.selectedDuration, 10)); // Update lastFiveTimestamps
+      this.updateChart(); // Update the chart with the new data
+    } else {
+      console.warn('No sensorValues available.'); // Handle the case when sensorValues is not available
+    }
+  }
+  
 
   updateChart() {
   if (this.chart && this.lastFiveTimestamps && this.lastFiveTimestamps.length > 0 && this.sensorValuesSubject) {
     const filteredSensorValues = this.lastFiveTimestamps.map(timestamp => {
       const sensorValue = this.sensorValuesSubject.value;
       const entry: { Timestamp: string, Temperature?: number, "Potential Hydrogen"?: number } = { Timestamp: timestamp };
+      console.log('Duration:',  parseInt(this.selectedDuration, 10));
 
       // Assert that sensorValue is not null before accessing properties
       if (sensorValue) {

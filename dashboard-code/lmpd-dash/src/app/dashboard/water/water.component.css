@@ -192,6 +192,7 @@ label {
 
 .radio-input {
   display: flex;
+  margin-bottom: 1em;
   align-items: center;
   justify-content: center;
 }
@@ -224,15 +225,34 @@ label {
   transition: .4s ease-in-out;
 }
 
+.radio-input .circle_graph {
+  position: relative;
+  top: 0.01em;
+  left: -1.1em;
+  width: 0.6em;
+  height: 0.6em;
+  background-color: #f3d632;
+  scale: 0;
+  border-radius: 10px;
+  transition: .4s ease-in-out;
+}
+
 .radio-input input:checked {
   box-shadow: none;
 
 }
 
-.radio-input input:checked + .circle {
+.radio-input input:checked + .circle { 
   transform: rotate(360deg);
   scale: 1;
 }
+
+.radio-input input:checked + .circle_graph { 
+  transform: rotate(360deg);
+  scale: 1;
+}
+
+
 
 
 
