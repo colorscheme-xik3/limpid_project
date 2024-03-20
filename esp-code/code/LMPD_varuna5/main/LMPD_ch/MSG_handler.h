@@ -12,6 +12,11 @@
 #include "esp_gap_bt_api.h"
 #include "esp_bt_device.h"
 #include "esp_spp_api.h"
+#include "onewire_bus.h"
+
+
+#include "../LMPD_adc/ADC_ads.h"
+#include "../LMPD_sen/SEN_ds.h"
 
 //#include "ds18b20.h"
 
@@ -24,10 +29,27 @@ extern SemaphoreHandle_t actionT_semaphore;
 extern SemaphoreHandle_t actionP_semaphore;
 extern SemaphoreHandle_t actionA_semaphore;
 
-void LMPD_SYSTEM_handleActionT( esp_spp_cb_param_t *param);
-/*
+typedef struct {
+    float Temperature;
+    float PHydrogen;
+    uint16_t TDSolids;
+    float Doxygen;
+    float Turbidity;
+} WaterParams;
+
+extern WaterParams LastParams;
+
+
 void LMPD_SYSTEM_handleActionT(onewire_bus_handle_t handle_ds, esp_spp_cb_param_t *param);
 void LMPD_SYSTEM_handleActionP(esp_spp_cb_param_t *param);
+void LMPD_SYSTEM_handleActionS(esp_spp_cb_param_t *param);
+void LMPD_SYSTEM_handleActionD(esp_spp_cb_param_t *param);
+void LMPD_SYSTEM_handleActionB(esp_spp_cb_param_t *param);
+
+
+
+/*
+void LMPD_SYSTEM_handleActionT(onewire_bus_handle_t handle_ds, esp_spp_cb_param_t *param);
 void LMPD_SYSTEM_handleActionA(esp_spp_cb_param_t *param);
 void LMPD_SYSTEM_handleActionD(onewire_bus_handle_t handle_ds, esp_spp_cb_param_t *param);*/
 

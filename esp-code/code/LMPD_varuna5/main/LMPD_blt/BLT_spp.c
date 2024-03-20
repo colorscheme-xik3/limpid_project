@@ -101,17 +101,25 @@ void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 
         switch (received_data[0]) {
             case 'T':
-                    ESP_LOGI(SPP_TAG, "Received 'T' on A0");
-                    LMPD_SYSTEM_handleActionT(param);
+                    ESP_LOGI(SPP_TAG, "Received 'T' on DS");
+                    
+                    LMPD_SYSTEM_handleActionT(handle_ds, param);
                 break;
             case 'P':
+                    ESP_LOGI(SPP_TAG, "Received 'P' on adc_A0");
+                    LMPD_SYSTEM_handleActionP(param);
+                break;
+            case 'S':
+                    ESP_LOGI(SPP_TAG, "Received 'S'");
+                    LMPD_SYSTEM_handleActionS(param);
                 break;
             case 'D':
-                        ESP_LOGI(SPP_TAG, "Received 'D'");
+                    ESP_LOGI(SPP_TAG, "Received 'D'");
+                    LMPD_SYSTEM_handleActionD(param);
                 break;
-            case 'U':
-                break;
-            case 'O':
+            case 'B':
+                    ESP_LOGI(SPP_TAG, "Received 'B'");
+                    LMPD_SYSTEM_handleActionB(param);
                 break;
             /* ---------------------------------------SURF MODE COMMANDS------------------------------------------------*/
             case 'A':

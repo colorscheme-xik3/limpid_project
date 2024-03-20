@@ -1,5 +1,8 @@
 #include "MSG_handler.h"
+#include "../LMPD_sen/SEN_ds.h"
 
+
+WaterParams LastParams;
 
 /*
 void LMPD_SYSTEM_handleActionT(onewire_bus_handle_t handle_ds, esp_spp_cb_param_t *param)
@@ -15,34 +18,67 @@ void LMPD_SYSTEM_handleActionT(onewire_bus_handle_t handle_ds, esp_spp_cb_param_
 }*/
 
 
-void LMPD_SYSTEM_handleActionT(esp_spp_cb_param_t *param)
+void LMPD_SYSTEM_handleActionT(onewire_bus_handle_t handle_ds, esp_spp_cb_param_t *param)
 {
-    char sppVoltageA0[10] = "pa";
-    esp_spp_write(param->write.handle, strlen(sppVoltageA0), (uint8_t *)sppVoltageA0);
+    char sppVoltageT[10] = "";
+    LastParams.Temperature = ds18b20_readTemperature(handle_ds);
+    ESP_LOGI(TAG_ADS, "PH Value: %f", LastParams.Temperature);
 
+
+    sprintf(sppVoltageT, "%.2fT", LastParams.Temperature);
+    printf("%.2fT",sppVoltageT);
+    esp_spp_write(param->write.handle, strlen(sppVoltageT), (uint8_t *)sppVoltageT);
 }
 
-/*
 void LMPD_SYSTEM_handleActionP(esp_spp_cb_param_t *param)
 {
-    char sppVoltageA1[10] = "";
+    char sppVoltageA0[10] = "";
+    LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A0, ADS1115_CONFIG_LSB);
+    float raw_A0 = (LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A0, ADS1115_CONFIG_LSB));
+    float mvolt_A0 = ((raw_A0* 4.096) / (32767))*1000;
 
-    float voltage_A1 = (LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A1, ADS1115_CONFIG_LSB));
-    float voltage_adc = voltage_A1 * 1000;  
+    //float voltage_adc = voltage_A0 * 1000;  
    // LMPD_PH_selector(PH_SENSOR);
-    
-    ESP_LOGI(TAG_ADS, "PH Value: %.2f", voltage_A1);
+    ESP_LOGI(TAG_ADS, "PH Value: %f", mvolt_A0);
 
     //ESP_LOGI(TAG_ADS, "PH Value: %.2f", LMPD_PH_calibrator(CALIBRATION_POINTS, voltage_A1));
 
     //sprintf(sppVoltageA1, "%.2fP", LMPD_PH_calibrator(CALIBRATION_POINTS, voltage_adc));
-    esp_spp_write(param->write.handle, strlen(sppVoltageA1), (uint8_t*)sppVoltageA1);
-
-    xSemaphoreGive(actionP_semaphore); // Give the semaphore to indicate completion
-
+    //esp_spp_write(param->write.handle, strlen(sppVoltageA1), (uint8_t*)sppVoltageA1);
 }
 
 
+void LMPD_SYSTEM_handleActionS(esp_spp_cb_param_t *param)
+{
+    char sppVoltageA1[10] = "";
+    LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A1, ADS1115_CONFIG_LSB);
+    float raw_A1 = (LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A1, ADS1115_CONFIG_LSB));
+    float mvolt_A1 = ((raw_A1* 4.096) / (32767))*1000;
+
+    ESP_LOGI(TAG_ADS, "TDS Value: %f", mvolt_A1);
+}
+
+void LMPD_SYSTEM_handleActionD(esp_spp_cb_param_t *param)
+{
+    char sppVoltageA2[10] = "";
+    LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A2, ADS1115_CONFIG_LSB);
+    float raw_A2 = (LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A2, ADS1115_CONFIG_LSB));
+    float mvolt_A2 = ((raw_A2* 4.096) / (32767))*1000;
+
+    ESP_LOGI(TAG_ADS, "DO Value: %f", mvolt_A2);
+}
+
+
+void LMPD_SYSTEM_handleActionB(esp_spp_cb_param_t *param)
+{
+    char sppVoltageA3[10] = "";
+    LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A3, ADS1115_CONFIG_LSB);
+    float raw_A3 = (LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A3, ADS1115_CONFIG_LSB));
+    float mvolt_A3 = ((raw_A3* 4.096) / (32767))*1000;
+
+    ESP_LOGI(TAG_ADS, "B Value: %f", mvolt_A3);
+}
+/*
 
 
 

@@ -44,6 +44,8 @@ extern esp_err_t LMPD_I2C_init(void) {
 uint16_t LMPD_I2C_configureADS(uint8_t address, uint8_t reg1, uint8_t reg2) {
     uint16_t adc_value = 0;
 
+    ESP_LOGI(TAG_ADS, "*re ADC value: %d", adc_value);
+
     // Set up the configuration bytes for the ADC
     uint8_t config[3] = {0};
     config[0] = ADS1115_CONFIG_REG;
@@ -78,8 +80,8 @@ uint16_t LMPD_I2C_configureADS(uint8_t address, uint8_t reg1, uint8_t reg2) {
     }
 
     // Delay for a settling time (adjust this delay as needed based on the device requirements)
-    vTaskDelay(pdMS_TO_TICKS(100));
-
+    //vTaskDelay(pdMS_TO_TICKS(2000));
+    
     // Create a new I2C command handle
     cmd = i2c_cmd_link_create();
 
@@ -95,6 +97,7 @@ uint16_t LMPD_I2C_configureADS(uint8_t address, uint8_t reg1, uint8_t reg2) {
     // Send the I2C stop bit
     i2c_master_stop(cmd);
 
+
     // Execute the I2C command
     ret = i2c_master_cmd_begin(I2C_MASTER_NUM, cmd, 1000 / portTICK_PERIOD_MS);
 
@@ -106,6 +109,8 @@ uint16_t LMPD_I2C_configureADS(uint8_t address, uint8_t reg1, uint8_t reg2) {
         ESP_LOGE(TAG_ADS, "Could not select conversion register for ADS1115 ADC");
         return 0;
     }
+
+    vTaskDelay(pdMS_TO_TICKS(200)); // Adjust the delay time as needed
 
     // Create a new I2C command handle
     cmd = i2c_cmd_link_create();
@@ -135,6 +140,9 @@ uint16_t LMPD_I2C_configureADS(uint8_t address, uint8_t reg1, uint8_t reg2) {
         return 0;
     }
 
+    adc_value = (data[0] << 8) | data[1];
+
+    ESP_LOGI(TAG_ADS, "ADC value: %d", adc_value);
     // Combine the read values into the ADC result
-    return adc_value = (data[0] << 8) | data[1];
+    return adc_value;
 }

@@ -13,7 +13,8 @@
     "math.h": "c",
     "sstream": "c",
     "regex": "c",
-    "uart.h": "c"
+    "uart.h": "c",
+    "msg_handler.h": "c"
   },
   "idf.openOcdConfigs": [
     "board/esp32-wrover-kit-3.3v.cfg"

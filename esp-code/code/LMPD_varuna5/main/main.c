@@ -23,10 +23,13 @@
 #include "onewire_bus.h"
 #include "driver/uart.h"
 #include <math.h>
+#include "driver/gpio.h"
 
 #include "LMPD_blt/BLT_spp.h"
 #include "LMPD_adc/ADC_ads.h"
+#include "LMPD_sen/SEN_ds.h"
 
+#define GPIO_PIN_NUMBER  GPIO_NUM_4  // Replace XX with the GPIO number you want to configure
 
 
 const esp_spp_mode_t esp_spp_mode = ESP_SPP_MODE_CB;
@@ -37,7 +40,9 @@ const esp_spp_sec_t sec_mask = ESP_SPP_SEC_AUTHENTICATE;
 const esp_spp_role_t role_slave = ESP_SPP_ROLE_SLAVE;
 bool bluetooth_connected = false;
 
-
+uint8_t device_num = 0;
+uint8_t device_rom_id[EXAMPLE_ONEWIRE_MAX_DEVICES][8];
+onewire_bus_handle_t handle_ds;
 
 
 TaskHandle_t task_A0_handle = NULL;
@@ -57,9 +62,13 @@ SemaphoreHandle_t writeSemaphore;
 
 SemaphoreHandle_t bluetooth_semaphore; // Semaphore to notify offline_task about Bluetooth connection status
 
+
+
 void online_task(void *pvParameters)
 {
     // Bluetooth initialization and configuration code
+
+   
 
     char bda_str[18] = {0};
     esp_err_t ret = nvs_flash_init();
@@ -154,12 +163,49 @@ void offline_task(void *pvParameters) {
     
 void app_main(void)
 {
+
+       gpio_config_t io_conf;
+    io_conf.intr_type = GPIO_INTR_DISABLE;        // Disable interrupt
+    io_conf.mode = GPIO_MODE_INPUT;                // Set as input mode
+    io_conf.pin_bit_mask = (1ULL << GPIO_PIN_NUMBER);  // Bit mask of the pins that you want to set
+    io_conf.pull_up_en = GPIO_PULLUP_ENABLE;       // Enable pull-up resistor
+    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;  // Disable pull-down resistor
+    gpio_config(&io_conf);
     // ------------------------------------------ DS18B20 INIT SECTION ----------------------------------------//
     
+    onewire_rmt_config_t config = {
+        .gpio_pin = EXAMPLE_ONEWIRE_GPIO_PIN,
+        .max_rx_bytes = 10
+    };
+
+    ESP_ERROR_CHECK(onewire_new_bus_rmt(&config, &handle_ds));
+    ESP_LOGI(TAG_DS, "1-wire bus installed");
+
+    onewire_rom_search_context_handler_t context_handler;
+    ESP_ERROR_CHECK(onewire_rom_search_context_create(handle_ds, &context_handler));
+
+    do {
+        esp_err_t search_result = onewire_rom_search(context_handler);
+
+        if (search_result == ESP_ERR_INVALID_CRC) {
+            continue;
+        } else if (search_result == ESP_FAIL || search_result == ESP_ERR_NOT_FOUND) {
+            break;
+        }
+
+        ESP_ERROR_CHECK(onewire_rom_get_number(context_handler, device_rom_id[device_num]));
+        ESP_LOGI(TAG_DS, "found device with rom id " ONEWIRE_ROM_ID_STR, ONEWIRE_ROM_ID(device_rom_id[device_num]));
+        device_num++;
+    } while (device_num < EXAMPLE_ONEWIRE_MAX_DEVICES);
+
+    ESP_ERROR_CHECK(onewire_rom_search_context_delete(context_handler));
+    ESP_LOGI(TAG_DS, "%d device%s found on 1-wire bus", device_num, device_num > 1 ? "s" : "");
+
     // ------------------------------------------ I2C INIT SECTION ----------------------------------------//
 
     ESP_ERROR_CHECK(LMPD_I2C_init());
     ESP_LOGI(TAG_ADS, "I2C initialized successfully");
+   
 
     bluetooth_semaphore = xSemaphoreCreateBinary();
     if (bluetooth_semaphore == NULL) {
@@ -169,9 +215,9 @@ void app_main(void)
 
 
     // ------------------------------------------ BLT INIT SECTION ----------------------------------------//
-
     xTaskCreate(&online_task, "bluetooth_task", 4096, NULL, 5, NULL);
     xTaskCreate(&offline_task, "offline_task", 4096, NULL, 5, NULL);
+    
 
 
 }
