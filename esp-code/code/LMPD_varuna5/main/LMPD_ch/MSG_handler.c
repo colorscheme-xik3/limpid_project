@@ -17,13 +17,23 @@ void LMPD_SYSTEM_handleActionT(onewire_bus_handle_t handle_ds, esp_spp_cb_param_
 
 }*/
 
+void LMPD_SYSTEM_handleActionT_sd(onewire_bus_handle_t handle_ds, bool mode_flag)
+{
+    const char *parameter = "Temperature";
+    float test = 10.54;
+    //LastParams.Temperature = ds18b20_readTemperature(handle_ds);
+    LastParams.Temperature = test;
+    ESP_LOGI(TAG_ADS, "PH Value: %f", LastParams.Temperature); 
+    LMPD_device_writing(MOUNT_POINT"/param.txt", parameter, LastParams.Temperature);
+}
 
-void LMPD_SYSTEM_handleActionT(onewire_bus_handle_t handle_ds, esp_spp_cb_param_t *param)
+
+void LMPD_SYSTEM_handleActionT(onewire_bus_handle_t handle_ds, esp_spp_cb_param_t *param, bool mode_flag)
 {
     char sppVoltageT[10] = "";
+    //LastParams.Temperature = ds18b20_readTemperature(handle_ds);
     LastParams.Temperature = ds18b20_readTemperature(handle_ds);
     ESP_LOGI(TAG_ADS, "PH Value: %f", LastParams.Temperature);
-
 
     sprintf(sppVoltageT, "%.2fT", LastParams.Temperature);
     printf("%.2fT",sppVoltageT);

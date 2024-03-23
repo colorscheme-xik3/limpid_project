@@ -24,10 +24,12 @@
 #include "driver/uart.h"
 #include <math.h>
 #include "driver/gpio.h"
+#include "esp_sleep.h"
 
 #include "LMPD_blt/BLT_spp.h"
 #include "LMPD_adc/ADC_ads.h"
 #include "LMPD_sen/SEN_ds.h"
+#include "LMPD_rom/ROM_msd.h"
 
 #define GPIO_PIN_NUMBER  GPIO_NUM_4  // Replace XX with the GPIO number you want to configure
 
@@ -148,14 +150,13 @@ void online_task(void *pvParameters)
 
 
 void offline_task(void *pvParameters) {
-    while (1) {
-        // Wait for the semaphore indicating Bluetooth connection
-        if (xSemaphoreTake(bluetooth_semaphore, portMAX_DELAY) == pdTRUE) {
-            // Do offline tasks here when Bluetooth is connected
-    
-        ESP_LOGI("ADC_ADS", "IM OFFLINE");
-            // Example: Send data to server, log data locally, etc.
-        }
+      while (1) {
+        // Do offline tasks here
+        LMPD_SYSTEM_handleActionT_sd(handle_ds, bluetooth_connected);
+        ESP_LOGI("ADC_ADS", "Performed action, wrote on SD");
+
+        // Enter deep sleep mode for 10 seconds
+   
     }
 }
 
@@ -163,6 +164,13 @@ void offline_task(void *pvParameters) {
     
 void app_main(void)
 {
+    
+    bluetooth_semaphore = xSemaphoreCreateBinary();
+    if (bluetooth_semaphore == NULL) {
+        // Semaphore creation failed
+        // Handle error
+    }
+
 
        gpio_config_t io_conf;
     io_conf.intr_type = GPIO_INTR_DISABLE;        // Disable interrupt
@@ -205,15 +213,12 @@ void app_main(void)
 
     ESP_ERROR_CHECK(LMPD_I2C_init());
     ESP_LOGI(TAG_ADS, "I2C initialized successfully");
+
+
+    // ------------------------------------------ SPI INIT SECTION ----------------------------------------//
+
+    ESP_ERROR_CHECK(sd_card_init());
    
-
-    bluetooth_semaphore = xSemaphoreCreateBinary();
-    if (bluetooth_semaphore == NULL) {
-        // Semaphore creation failed
-        // Handle error
-    }
-
-
     // ------------------------------------------ BLT INIT SECTION ----------------------------------------//
     xTaskCreate(&online_task, "bluetooth_task", 4096, NULL, 5, NULL);
     xTaskCreate(&offline_task, "offline_task", 4096, NULL, 5, NULL);

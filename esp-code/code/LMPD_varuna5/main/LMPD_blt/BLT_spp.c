@@ -102,8 +102,7 @@ void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         switch (received_data[0]) {
             case 'T':
                     ESP_LOGI(SPP_TAG, "Received 'T' on DS");
-                    
-                    LMPD_SYSTEM_handleActionT(handle_ds, param);
+                    LMPD_SYSTEM_handleActionT(handle_ds, param, bluetooth_connected);
                 break;
             case 'P':
                     ESP_LOGI(SPP_TAG, "Received 'P' on adc_A0");
