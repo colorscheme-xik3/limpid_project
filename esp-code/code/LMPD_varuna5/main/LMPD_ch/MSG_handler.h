@@ -42,9 +42,9 @@ extern WaterParams LastParams;
 
 
 void LMPD_SYSTEM_handleActionT(onewire_bus_handle_t handle_ds, esp_spp_cb_param_t *param, bool mode_flag);
-void LMPD_SYSTEM_handleActionP(esp_spp_cb_param_t *param);
-void LMPD_SYSTEM_handleActionS(esp_spp_cb_param_t *param);
-void LMPD_SYSTEM_handleActionD(esp_spp_cb_param_t *param);
+void LMPD_SYSTEM_handleActionP(esp_spp_cb_param_t *param, bool mode_flag);
+void LMPD_SYSTEM_handleActionS(esp_spp_cb_param_t *param, bool mode_flag);
+void LMPD_SYSTEM_handleActionD(esp_spp_cb_param_t *param, bool mode_flag);
 void LMPD_SYSTEM_handleActionB(esp_spp_cb_param_t *param);
 
 

@@ -216,7 +216,7 @@ esp_err_t LMPD_device_writing(const char *filename, char *parameter, float data)
 {   
 
      char info[200]; // Adjust size as needed
-    snprintf(info, sizeof(info), "Parameter: %s:     Value: %f\n", parameter, data);
+    snprintf(info, sizeof(info), "%s,%f\n", parameter, data);
     // Call the sd_card_write function to write the data to the file
     esp_err_t write_result = sd_card_write(filename, info);
     
@@ -224,13 +224,6 @@ esp_err_t LMPD_device_writing(const char *filename, char *parameter, float data)
         // Handle write error
         return write_result;
     }
-    /*
-    esp_err_t rename_result = rename_file(filename, file_registration);
-
-    if (rename_result != ESP_OK) {
-        // Handle rename error
-        return rename_result;
-    }*/
 
     return ESP_OK;
 }

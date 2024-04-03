@@ -10,7 +10,10 @@
  *         
  **/
 
+
 #include "BLT_spp.h"
+
+bool sd_mode = false;
 
 
 char *bda2str(uint8_t * bda, char *str, size_t size)
@@ -102,27 +105,33 @@ void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         switch (received_data[0]) {
             case 'T':
                     ESP_LOGI(SPP_TAG, "Received 'T' on DS");
-                    LMPD_SYSTEM_handleActionT(handle_ds, param, bluetooth_connected);
+                    LMPD_SYSTEM_handleActionT(handle_ds, param, sd_mode);
                 break;
             case 'P':
                     ESP_LOGI(SPP_TAG, "Received 'P' on adc_A0");
-                    LMPD_SYSTEM_handleActionP(param);
+                    LMPD_SYSTEM_handleActionP(param, sd_mode);
                 break;
             case 'S':
                     ESP_LOGI(SPP_TAG, "Received 'S'");
-                    LMPD_SYSTEM_handleActionS(param);
+                    LMPD_SYSTEM_handleActionS(param, sd_mode);
                 break;
             case 'D':
                     ESP_LOGI(SPP_TAG, "Received 'D'");
-                    LMPD_SYSTEM_handleActionD(param);
+                    LMPD_SYSTEM_handleActionD(param, sd_mode);
                 break;
             case 'B':
                     ESP_LOGI(SPP_TAG, "Received 'B'");
                     LMPD_SYSTEM_handleActionB(param);
                 break;
             /* ---------------------------------------SURF MODE COMMANDS------------------------------------------------*/
-            case 'A':
+            case 'M':
+                    ESP_LOGI(SPP_TAG, "Received 'SD' - Store in SD command'");
+                    sd_mode = true;
+                break;
 
+            case 'N':
+                    ESP_LOGI(SPP_TAG, "Received 'DB' - Store in Firebase'");
+                    sd_mode = false;
                 break;
             default:
                 ESP_LOGI(SPP_TAG, "Entering Default");

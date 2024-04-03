@@ -34,6 +34,8 @@ extern const esp_spp_sec_t sec_mask;
 extern const esp_spp_role_t role_slave;
 
 extern bool bluetooth_connected;
+extern bool sd_mode;
+
 
 
 

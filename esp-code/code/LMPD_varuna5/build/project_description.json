@@ -1,7 +1,7 @@
 {
     "version":            "1",
     "project_name":       "LMPD_VARUNA5",
-    "project_version":    "60ed97a-dirty",
+    "project_version":    "1168151-dirty",
     "project_path":       "D:/limpid_project/esp-code/code/LMPD_varuna5",
     "idf_path":           "C:/Users/franc/esp/v5.1.2/esp-idf",
     "build_dir":          "D:/limpid_project/esp-code/code/LMPD_varuna5/build",

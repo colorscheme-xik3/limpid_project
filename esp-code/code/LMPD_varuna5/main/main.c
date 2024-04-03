@@ -150,12 +150,13 @@ void online_task(void *pvParameters)
 
 
 void offline_task(void *pvParameters) {
-      while (1) {
+    while (1) {
+        if (xSemaphoreTake(bluetooth_semaphore, portMAX_DELAY) == pdTRUE) { // Wait indefinitely for the semaphore
         // Do offline tasks here
-        LMPD_SYSTEM_handleActionT_sd(handle_ds, bluetooth_connected);
-        ESP_LOGI("ADC_ADS", "Performed action, wrote on SD");
-
-        // Enter deep sleep mode for 10 seconds
+            LMPD_SYSTEM_handleActionT_sd(handle_ds, bluetooth_connected);
+            ESP_LOGI("ADC_ADS", "Performed action, wrote on SD");
+            vTaskDelay(pdMS_TO_TICKS(1000));  // Example: delay for 1 second
+        }
    
     }
 }
