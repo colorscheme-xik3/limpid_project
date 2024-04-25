@@ -1,7 +1,7 @@
 {
     "version":            "1",
     "project_name":       "LMPD_VARUNA5",
-    "project_version":    "1168151-dirty",
+    "project_version":    "4b909f8-dirty",
     "project_path":       "D:/limpid_project/esp-code/code/LMPD_varuna5",
     "idf_path":           "C:/Users/franc/esp/v5.1.2/esp-idf",
     "build_dir":          "D:/limpid_project/esp-code/code/LMPD_varuna5/build",
@@ -790,7 +790,7 @@
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "D:/limpid_project/esp-code/code/LMPD_varuna5/build/esp-idf/main/libmain.a",
-            "sources": [ "D:/limpid_project/esp-code/code/LMPD_varuna5/main/LMPD_adc/ADC_ads.c", "D:/limpid_project/esp-code/code/LMPD_varuna5/main/main.c", "D:/limpid_project/esp-code/code/LMPD_varuna5/main/LMPD_blt/BLT_spp.c", "D:/limpid_project/esp-code/code/LMPD_varuna5/main/LMPD_ch/MSG_handler.c", "D:/limpid_project/esp-code/code/LMPD_varuna5/main/LMPD_sen/SEN_ds.c", "D:/limpid_project/esp-code/code/LMPD_varuna5/main/LMPD_rom/ROM_msd.c" ],
+            "sources": [ "D:/limpid_project/esp-code/code/LMPD_varuna5/main/LMPD_adc/ADC_ads.c", "D:/limpid_project/esp-code/code/LMPD_varuna5/main/main.c", "D:/limpid_project/esp-code/code/LMPD_varuna5/main/LMPD_blt/BLT_spp.c", "D:/limpid_project/esp-code/code/LMPD_varuna5/main/LMPD_ch/MSG_handler.c", "D:/limpid_project/esp-code/code/LMPD_varuna5/main/LMPD_sen/SEN_ds.c", "D:/limpid_project/esp-code/code/LMPD_varuna5/main/LMPD_rom/ROM_msd.c", "D:/limpid_project/esp-code/code/LMPD_varuna5/main/LMPD_sen/SEN_tds.c", "D:/limpid_project/esp-code/code/LMPD_varuna5/main/LMPD_wpp/WPP_handler.c" ],
             "include_dirs": [ "." ]
         },
         "mbedtls": {

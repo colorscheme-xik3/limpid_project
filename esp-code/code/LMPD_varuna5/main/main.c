@@ -153,7 +153,7 @@ void offline_task(void *pvParameters) {
     while (1) {
         if (xSemaphoreTake(bluetooth_semaphore, portMAX_DELAY) == pdTRUE) { // Wait indefinitely for the semaphore
         // Do offline tasks here
-            LMPD_SYSTEM_handleActionT_sd(handle_ds, bluetooth_connected);
+            //LMPD_SYSTEM_handleActionT_sd(handle_ds, bluetooth_connected);
             ESP_LOGI("ADC_ADS", "Performed action, wrote on SD");
             vTaskDelay(pdMS_TO_TICKS(1000));  // Example: delay for 1 second
         }
@@ -219,6 +219,7 @@ void app_main(void)
     // ------------------------------------------ SPI INIT SECTION ----------------------------------------//
 
     ESP_ERROR_CHECK(sd_card_init());
+
    
     // ------------------------------------------ BLT INIT SECTION ----------------------------------------//
     xTaskCreate(&online_task, "bluetooth_task", 4096, NULL, 5, NULL);

@@ -16,6 +16,13 @@ sdmmc_card_t *card;
 
 bool regist = false;
 
+static long file_position = 0;
+
+static FILE *csv_file = NULL;
+
+#define MAX_LINE_LENGTH 256
+
+
 
 esp_err_t sd_card_init(void)
 {
@@ -164,6 +171,66 @@ esp_err_t sd_card_read(const char *filename, char *buffer, size_t buffer_size)
     return ESP_OK;
 }
 
+esp_err_t LMPD_device_read_block(const char *filename, char *block_buffer, size_t buffer_size) {
+    if (csv_file == NULL) {
+        // Open the file if it's not already open
+        csv_file = fopen(filename, "r");
+        if (csv_file == NULL) {
+            return ESP_FAIL; // File open error
+        }
+    }
+
+    // Clear the block buffer
+    block_buffer[0] = '\0';
+
+    char line_buffer[MAX_LINE_LENGTH];
+    int empty_line_count = 0;
+
+    while (fgets(line_buffer, sizeof(line_buffer), csv_file) != NULL) {
+        // Trim newline characters
+        size_t len = strlen(line_buffer);
+        if (len > 0 && (line_buffer[len - 1] == '\n' || line_buffer[len - 1] == '\r')) {
+            line_buffer[len - 1] = '\0';
+        }
+
+        // Check for an empty line
+        if (line_buffer[0] == '\0') {
+            // Increment empty line count
+            empty_line_count++;
+
+            // If two consecutive empty lines are encountered, stop reading
+            if (empty_line_count >= 2) {
+                break;
+            }
+
+            continue;
+        }
+
+        // Reset empty line count when a non-empty line is encountered
+        empty_line_count = 0;
+
+        // Append the current line to the block buffer
+        strncat(block_buffer, line_buffer, buffer_size - strlen(block_buffer) - 1);
+
+        // Ensure the buffer does not exceed its size
+        if (strlen(block_buffer) >= buffer_size - 1) {
+            printf("Block buffer overflow\n");
+            break;
+        }
+    }
+
+    // Check if end of file is reached or error occurred
+    if (feof(csv_file) || ferror(csv_file)) {
+        // Close the file
+        fclose(csv_file);
+        csv_file = NULL;
+        return ESP_FAIL; // Return error if EOF or file error
+    }
+
+    return ESP_OK;
+}
+
+
 esp_err_t LMPD_device_register(const char *filename)
 {
     // Characters to choose from for the key
@@ -215,8 +282,40 @@ esp_err_t LMPD_device_register(const char *filename)
 esp_err_t LMPD_device_writing(const char *filename, char *parameter, float data)
 {   
 
-     char info[200]; // Adjust size as needed
-    snprintf(info, sizeof(info), "%s,%f\n", parameter, data);
+    char info[200]; // Adjust size as needed
+    snprintf(info, sizeof(info), "%s,%f", parameter, data);
+    // Call the sd_card_write function to write the data to the file
+    esp_err_t write_result = sd_card_write(filename, info);
+    
+    if (write_result != ESP_OK) {
+        // Handle write error
+        return write_result;
+    }
+
+    return ESP_OK;
+}
+
+esp_err_t LMPD_device_writing_time(const char *filename, char *parameter, char* data)
+{   
+
+    char info[200]; // Adjust size as needed
+    snprintf(info, sizeof(info), "%s, %s", parameter, data);
+    // Call the sd_card_write function to write the data to the file
+    esp_err_t write_result = sd_card_write(filename, info);
+    
+    if (write_result != ESP_OK) {
+        // Handle write error
+        return write_result;
+    }
+
+    return ESP_OK;
+}
+
+esp_err_t LMPD_device_writing_space(const char *filename)
+{   
+
+    char info[2]; // Adjust size as needed
+    snprintf(info, sizeof(info), "\n");
     // Call the sd_card_write function to write the data to the file
     esp_err_t write_result = sd_card_write(filename, info);
     

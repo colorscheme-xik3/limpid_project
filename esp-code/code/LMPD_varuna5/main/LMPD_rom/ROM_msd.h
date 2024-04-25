@@ -22,6 +22,8 @@
 
 #define SD_CARD_TAG "SDcard"
 
+
+
 extern sdmmc_host_t host; // Declare the host variable as extern
 
 extern sdmmc_card_t *card;
@@ -30,6 +32,11 @@ extern bool regist;
 
 esp_err_t LMPD_device_register(const char *filename);
 esp_err_t LMPD_device_writing(const char *filename, char *parameter, float data);
+esp_err_t LMPD_device_writing_space(const char *filename);
+esp_err_t LMPD_device_writing_time(const char *filename, char *parameter, char* data);
+esp_err_t LMPD_device_read_block(const char *filename, char *block_buffer, size_t buffer_size);
+
+
 
 
 esp_err_t sd_card_init(void);

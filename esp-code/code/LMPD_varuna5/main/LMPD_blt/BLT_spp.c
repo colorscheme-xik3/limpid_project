@@ -12,6 +12,7 @@
 
 
 #include "BLT_spp.h"
+#include <ctype.h>  // For isdigit function
 
 bool sd_mode = false;
 
@@ -115,15 +116,15 @@ void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
                     ESP_LOGI(SPP_TAG, "Received 'S'");
                     LMPD_SYSTEM_handleActionS(param, sd_mode);
                 break;
-            case 'D':
-                    ESP_LOGI(SPP_TAG, "Received 'D'");
+            case 'O':
+                    ESP_LOGI(SPP_TAG, "Received 'O'");
                     LMPD_SYSTEM_handleActionD(param, sd_mode);
                 break;
             case 'B':
                     ESP_LOGI(SPP_TAG, "Received 'B'");
-                    LMPD_SYSTEM_handleActionB(param);
+                    LMPD_SYSTEM_handleActionB(param, sd_mode);
                 break;
-            /* ---------------------------------------SURF MODE COMMANDS------------------------------------------------*/
+            /* ---------------------------------------CONNECTION MODE COMMANDS------------------------------------------------*/
             case 'M':
                     ESP_LOGI(SPP_TAG, "Received 'SD' - Store in SD command'");
                     sd_mode = true;
@@ -133,10 +134,26 @@ void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
                     ESP_LOGI(SPP_TAG, "Received 'DB' - Store in Firebase'");
                     sd_mode = false;
                 break;
+
+            case 'F':
+                    ESP_LOGI(SPP_TAG, "Starting Flush");
+                    //xTaskCreate(flushTask, "Flush_Task", 4096, param, 1, NULL);
+                    LMPD_SYSTEM_handleActionF(param, sd_mode);
+
+                break;
+
             default:
                 ESP_LOGI(SPP_TAG, "Entering Default");
 
                 break;
+        }
+
+         if (strncmp(received_data, "DATE:", 5) == 0) {
+            char *date_string = received_data + 5; // Skip "DATE:" prefix        
+            //processDateString(dateString);
+            ESP_LOGI(SPP_TAG, "Received date: %s", date_string);
+            LMPD_SYSTEM_Time(date_string, sd_mode);
+             LMPD_SYSTEM_save_parameters(sd_mode);
         }
 
 #else
@@ -172,6 +189,29 @@ void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         break;
     }
 }
+
+// Implementation of processDateString function
+#include <string.h>
+#include <ctype.h>
+
+void processDateString(char *dateString) {
+    // Find the first space character to truncate the string after the date and time
+    char *spacePosition = strchr(dateString, ' ');
+    if (spacePosition != NULL) {
+        *spacePosition = '\0'; // Null-terminate the string after the date and time
+
+        // Calculate the size of the truncated date string
+        size_t size = strlen(dateString);
+
+        printf("Size of date string: %zu\n", size);
+    } else {
+        // Handle case where space is not found (invalid format)
+        // For example, log an error or perform appropriate error handling
+        printf("Invalid date string format\n");
+    }
+}
+
+
 
 
 
