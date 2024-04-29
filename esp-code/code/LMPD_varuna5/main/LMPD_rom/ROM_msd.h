@@ -33,7 +33,7 @@ extern bool regist;
 esp_err_t LMPD_device_register(const char *filename);
 esp_err_t LMPD_device_writing(const char *filename, char *parameter, float data);
 esp_err_t LMPD_device_writing_space(const char *filename);
-esp_err_t LMPD_device_writing_time(const char *filename, char *parameter, char* data);
+esp_err_t LMPD_device_writing_string(const char *filename, char *parameter, char* data);
 esp_err_t LMPD_device_read_block(const char *filename, char *block_buffer, size_t buffer_size);
 
 

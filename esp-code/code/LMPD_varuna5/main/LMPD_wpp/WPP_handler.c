@@ -1,43 +1,65 @@
 #include "WPP_HANDLER.h"
 #include <string.h> 
 
-// Function to determine the current water type based on measured parameters
-char LMPD_SYSTEM_waterType(void) {
-    // Retrieve the last gathered water parameters (assumed to be in LastParams)
-    WaterParams lastParams = LastParams;
+// Define WaterQualityStandards array
+WaterQualitySpecs waterQualityStandards[] = {
+    {
+        {7, 8},         // pH
+        {301, 699},     // TDS ppm
+        {5.5, 8.5},     // Dissolved oxygen mg/L
+        {1, 5}          // NTU
+    },
+    {
+        {7.9, 9},       // SALT water standards
+        {700, 2000},
+        {7.0, 8.0},
+        {1, 80}
+    },
+    {
+        {6.5, 9.5},     // pH
+        {50, 300},      // TDS ppm
+        {6.5, 8},       // Dissolved oxygen mg/L
+        {1, 5}          // NTU
+    },
+};
 
-    // Compare pH, TDS, dissolved oxygen, and total bacteria with standard values for each water type
-    if (lastParams.PHydrogen >= waterQualityStandards[WATER_TYPE_FRESH].pH.minValue &&
-        lastParams.PHydrogen <= waterQualityStandards[WATER_TYPE_FRESH].pH.maxValue &&
-        lastParams.TDSolids >= waterQualityStandards[WATER_TYPE_FRESH].tds.minValue &&
-        lastParams.TDSolids <= waterQualityStandards[WATER_TYPE_FRESH].tds.maxValue &&
-        lastParams.Doxygen >= waterQualityStandards[WATER_TYPE_FRESH].dissolvedOxygen.minValue &&
-        lastParams.Doxygen <= waterQualityStandards[WATER_TYPE_FRESH].dissolvedOxygen.maxValue &&
-        lastParams.Turbidity >= waterQualityStandards[WATER_TYPE_FRESH].turbidity.minValue &&
-        lastParams.Turbidity <= waterQualityStandards[WATER_TYPE_FRESH].turbidity.maxValue) {
-        return 'F';  // FRESH water type
-    }
-    else if (lastParams.PHydrogen >= waterQualityStandards[WATER_TYPE_SALT].pH.minValue &&
-             lastParams.PHydrogen <= waterQualityStandards[WATER_TYPE_SALT].pH.maxValue &&
-             lastParams.TDSolids >= waterQualityStandards[WATER_TYPE_SALT].tds.minValue &&
-             lastParams.TDSolids <= waterQualityStandards[WATER_TYPE_SALT].tds.maxValue &&
-             lastParams.Doxygen >= waterQualityStandards[WATER_TYPE_SALT].dissolvedOxygen.minValue &&
-             lastParams.Doxygen <= waterQualityStandards[WATER_TYPE_SALT].dissolvedOxygen.maxValue &&
-             lastParams.Turbidity >= waterQualityStandards[WATER_TYPE_SALT].turbidity.minValue &&
-             lastParams.Turbidity <= waterQualityStandards[WATER_TYPE_SALT].turbidity.maxValue) {
-        return 'S';  // SALT water type
-    }
-    else if (lastParams.PHydrogen >= waterQualityStandards[WATER_TYPE_TAP].pH.minValue &&
-             lastParams.PHydrogen <= waterQualityStandards[WATER_TYPE_TAP].pH.maxValue &&
-             lastParams.TDSolids >= waterQualityStandards[WATER_TYPE_TAP].tds.minValue &&
-             lastParams.TDSolids <= waterQualityStandards[WATER_TYPE_TAP].tds.maxValue &&
-             lastParams.Doxygen >= waterQualityStandards[WATER_TYPE_TAP].dissolvedOxygen.minValue &&
-             lastParams.Doxygen <= waterQualityStandards[WATER_TYPE_TAP].dissolvedOxygen.maxValue &&
-             lastParams.Turbidity >= waterQualityStandards[WATER_TYPE_TAP].turbidity.minValue &&
-             lastParams.Turbidity <= waterQualityStandards[WATER_TYPE_TAP].turbidity.maxValue) {
-        return 'T';  // TAP water type
-    }
-    else {
-        return 'U';  // Unknown water type
+
+
+// Function to determine the current water type based on measured parameters
+// Function to determine the current water type based on measured parameters (FreeRTOS task)
+void LMPD_SYSTEM_waterType(void *pvParameters) {
+
+    while (1) {
+        // Compare parameters with standard values for each water type
+        if (
+            LastParams.TDSolids >= waterQualityStandards[WATER_TYPE_FRESH].tds.minValue &&
+            LastParams.TDSolids <= waterQualityStandards[WATER_TYPE_FRESH].tds.maxValue 
+            ) {
+
+            // Update waterType based on detected type
+            strcpy(LastParams.waterType, "FRESH WATER");
+        }
+        else if (
+                 LastParams.TDSolids >= waterQualityStandards[WATER_TYPE_SALT].tds.minValue &&
+                 LastParams.TDSolids <= waterQualityStandards[WATER_TYPE_SALT].tds.maxValue 
+         ) {
+
+            // Update waterType based on detected type
+            strcpy(LastParams.waterType, "SALT WATER");
+        }
+        else if (
+                 LastParams.TDSolids >= waterQualityStandards[WATER_TYPE_TAP].tds.minValue &&
+                 LastParams.TDSolids <= waterQualityStandards[WATER_TYPE_TAP].tds.maxValue 
+                 ) {
+
+            // Update waterType based on detected type
+            strcpy(LastParams.waterType, "TAP WATER");
+        }
+        else {
+            // Default to unknown type
+            strcpy(LastParams.waterType, "FLOATING PROBE");
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(2000)); // Delay task execution for 1000 milliseconds (1 second)
     }
 }

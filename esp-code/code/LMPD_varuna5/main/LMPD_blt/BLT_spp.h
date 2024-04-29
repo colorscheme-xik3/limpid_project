@@ -15,6 +15,8 @@
 #include "sys/time.h"
 
 #include "../LMPD_ch/MSG_handler.h"
+#include "../LMPD_WPP/WPP_handler.h"
+
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"

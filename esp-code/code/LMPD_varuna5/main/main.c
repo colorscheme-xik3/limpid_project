@@ -30,6 +30,8 @@
 #include "LMPD_adc/ADC_ads.h"
 #include "LMPD_sen/SEN_ds.h"
 #include "LMPD_rom/ROM_msd.h"
+#include "LMPD_wpp/WPP_handler.h"
+
 
 #define GPIO_PIN_NUMBER  GPIO_NUM_4  // Replace XX with the GPIO number you want to configure
 
@@ -222,9 +224,9 @@ void app_main(void)
 
    
     // ------------------------------------------ BLT INIT SECTION ----------------------------------------//
-    xTaskCreate(&online_task, "bluetooth_task", 4096, NULL, 5, NULL);
+    xTaskCreate(&online_task, "bluetooth_task", 8192, NULL, 5, NULL);
     xTaskCreate(&offline_task, "offline_task", 4096, NULL, 5, NULL);
-    
+    xTaskCreate(&LMPD_SYSTEM_waterType, "water_task", 2048, NULL, 2, NULL);
 
 
 }

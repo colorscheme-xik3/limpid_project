@@ -96,7 +96,7 @@ void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
          */
         ESP_LOGI(SPP_TAG, "ESP_SPP_DATA_IND_EVT len:%d handle:%d",
                  param->data_ind.len, param->data_ind.handle);
-        if (param->data_ind.len < 128) {
+        if (param->data_ind.len < 300) {
             esp_log_buffer_hex("", param->data_ind.data, param->data_ind.len);
         }
 
@@ -123,6 +123,11 @@ void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
             case 'B':
                     ESP_LOGI(SPP_TAG, "Received 'B'");
                     LMPD_SYSTEM_handleActionB(param, sd_mode);
+
+                break;
+            case 'H':
+                    ESP_LOGI(SPP_TAG, "Received 'H'");
+                    LMPD_SYSTEM_handleActionH(param, sd_mode);
                 break;
             /* ---------------------------------------CONNECTION MODE COMMANDS------------------------------------------------*/
             case 'M':
@@ -138,7 +143,9 @@ void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
             case 'F':
                     ESP_LOGI(SPP_TAG, "Starting Flush");
                     //xTaskCreate(flushTask, "Flush_Task", 4096, param, 1, NULL);
-                    LMPD_SYSTEM_handleActionF(param, sd_mode);
+                    //LMPD_SYSTEM_handleActionF(param, sd_mode);
+                    LMPD_SYSTEM_handleAction_test(param, sd_mode);
+
 
                 break;
 
@@ -148,12 +155,14 @@ void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
                 break;
         }
 
-         if (strncmp(received_data, "DATE:", 5) == 0) {
+        if (strncmp(received_data, "DATE:", 5) == 0) 
+        {
             char *date_string = received_data + 5; // Skip "DATE:" prefix        
             //processDateString(dateString);
             ESP_LOGI(SPP_TAG, "Received date: %s", date_string);
             LMPD_SYSTEM_Time(date_string, sd_mode);
-             LMPD_SYSTEM_save_parameters(sd_mode);
+            LMPD_SYSTEM_save_parameters(sd_mode);
+
         }
 
 #else

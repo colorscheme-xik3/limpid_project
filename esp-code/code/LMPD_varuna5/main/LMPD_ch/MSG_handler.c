@@ -34,7 +34,7 @@ void LMPD_SYSTEM_handleActionT_sd(onewire_bus_handle_t handle_ds, bool mode_flag
 void LMPD_SYSTEM_handleActionT(onewire_bus_handle_t handle_ds, esp_spp_cb_param_t *param, bool mode_flag)
 {
     LMPD_SYSTEM_PM(POWER_MODE_ON);
-    char sppVoltageT[10] = "";
+    char sppVoltageT[4] = "";
     LastParams.Temperature = ds18b20_readTemperature(handle_ds);
     ESP_LOGI(TAG_ADS, "T Value: %f", LastParams.Temperature);
 
@@ -104,7 +104,7 @@ void LMPD_SYSTEM_handleActionS(esp_spp_cb_param_t *param, bool mode_flag)
 
 void LMPD_SYSTEM_handleActionD(esp_spp_cb_param_t *param, bool mode_flag)
 {
-    char sppVoltageA2[10] = "4.5D";
+    char sppVoltageA2[10] = "4.5O";
 
     
     LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A2, ADS1115_CONFIG_LSB);
@@ -149,6 +149,18 @@ void LMPD_SYSTEM_handleActionB(esp_spp_cb_param_t *param, bool mode_flag)
     esp_spp_write(param->write.handle, strlen(sppVoltageA3), (uint8_t*)sppVoltageA3);
 }
 
+
+void LMPD_SYSTEM_handleActionH(esp_spp_cb_param_t *param, bool mode_flag) {
+    char water_type[10] = "";  // Buffer to hold water type message
+    // Create the water type message ("FRESHT" for example)
+    sprintf(water_type, "%sH", LastParams.waterType);
+    // Check if the message should be sent over ESP SPP
+        // Send the water type message over ESP SPP
+    esp_spp_write(param->write.handle, strlen(water_type), (uint8_t*)water_type);
+    
+}
+
+
 void LMPD_SYSTEM_Time(char *date, bool mode_flag)
 {      
     char join_date[20]; // Sufficient size for "yyyy-MM-dd HH:mm\0"
@@ -175,23 +187,26 @@ void LMPD_SYSTEM_save_parameters(bool mode_flag)
     char join_date[20]; // Sufficient size for "yyyy-MM-dd HH:mm\0"
 
     const char *t_parameter = "Temperature";
-    const char *p_parameter = "PH";
-    const char *s_parameter = "TDS";
-    const char *o_parameter = "DO";
+    const char *p_parameter = "Potential Hydrogen";
+    const char *s_parameter = "Total Dissolved Solids";
+    const char *o_parameter = "Dissolved Oxygen";
     const char *b_parameter = "Turbidity";
-    const char *d_parameter = "Date";
+    const char *d_parameter = "Timestamp";
+    const char *w_parameter = "Water Type";
 
     snprintf(join_date, sizeof(join_date), "%d-%02d-%02d %02d:%02d",
              LastDate.year, LastDate.month, LastDate.day, LastDate.hour, LastDate.min);
 
     if(mode_flag)
     {
+        printf("Guardei");
         LMPD_device_writing(MOUNT_POINT"/param.csv", t_parameter, LastParams.Temperature);
         LMPD_device_writing(MOUNT_POINT"/param.csv", p_parameter, LastParams.PHydrogen);
         LMPD_device_writing(MOUNT_POINT"/param.csv", s_parameter, LastParams.TDSolids);
         LMPD_device_writing(MOUNT_POINT"/param.csv", o_parameter, LastParams.Doxygen);
         LMPD_device_writing(MOUNT_POINT"/param.csv", b_parameter, LastParams.Turbidity);
-        LMPD_device_writing_time(MOUNT_POINT"/param.csv", d_parameter, join_date);
+        LMPD_device_writing_string(MOUNT_POINT"/param.csv", w_parameter, LastParams.waterType);
+        LMPD_device_writing_string(MOUNT_POINT"/param.csv", d_parameter, join_date);
         LMPD_device_writing_space(MOUNT_POINT"/param.csv");
 
     }
@@ -199,7 +214,7 @@ void LMPD_SYSTEM_save_parameters(bool mode_flag)
 }
 
 
-
+/*
 void flushTask(void *pvParameters) {
     char sppStopFlush[10] = "";
     const char *filename = MOUNT_POINT"/param.csv";
@@ -221,7 +236,8 @@ void flushTask(void *pvParameters) {
 
         // Process the read block (print in this example)
         printf("Block %d:\n%s\n", block_count + 1, block_buffer);
-
+        
+        esp_spp_write(param->write.handle, strlen(block_buffer), (uint8_t*)block_buffer);
         // Simulate delay before reading the next block
         vTaskDelay(pdMS_TO_TICKS(1000)); // Delay for 2 seconds
         block_count++;
@@ -235,7 +251,7 @@ void flushTask(void *pvParameters) {
 
     // Task completed, delete the task
     vTaskDelete(NULL);
-}
+}*/
 
 void LMPD_SYSTEM_handleActionF(esp_spp_cb_param_t *param, bool mode_flag)
 {
@@ -250,31 +266,72 @@ void LMPD_SYSTEM_handleActionF(esp_spp_cb_param_t *param, bool mode_flag)
     printf("Stoped to flush\n");
 
 
-    while (1) {
+   // while (1) {
+    for(int i = 0; i < 5; i++)
+    {
         // Read a block from the CSV file
         ret = LMPD_device_read_block(filename, block_buffer, sizeof(block_buffer));
+
         if (ret != ESP_OK) {
             ESP_LOGE(FLUSH_TAG, "Error reading block from file");
             break; // Exit the loop if there's an error
         }
+        
+        //esp_spp_write(param->write.handle, strlen(concatenated_blocks), (uint8_t*)concatenated_blocks);
+    
 
         // Process the read block (print in this example)
         printf("Block %d:\n%s\n", block_count + 1, block_buffer);
-
+        esp_spp_write(param->write.handle, strlen(block_buffer), (uint8_t*)block_buffer);
+        // Reset the first character to null terminator
         // Simulate delay before reading the next block
-        vTaskDelay(pdMS_TO_TICKS(1000)); // Delay for 2 seconds
+        vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 2 seconds
         block_count++;
     }
+    //}
+
 
     sprintf(sppStopFlush, "%.1fF", test);
-
-
-    printf("%s",sppStopFlush);
 
     esp_spp_write(param->write.handle, strlen(sppStopFlush), (uint8_t*)sppStopFlush);
     
     printf("Restarted command sending\n");
 
+}
+
+
+void LMPD_SYSTEM_handleAction_test(esp_spp_cb_param_t *param, bool mode_flag)
+{
+    static int current_block_index = 0;  // Static variable to track current block index
+    const char *filename = MOUNT_POINT"/param.csv";
+    char block_buffer[MAX_LINE_LENGTH];
+    esp_err_t ret;
+
+    char sppStopFlush[10];  // Adjust buffer size as needed
+    float test = 1.5;
+
+    printf("Stoped to flush\n");
+
+    // Read the next block of data from the CSV file
+    ret = LMPD_device_read_block(filename, block_buffer, sizeof(block_buffer));
+    if (ret != ESP_OK) {
+        sprintf(sppStopFlush, "%.1fZ", test);
+        esp_spp_write(param->write.handle, strlen(sppStopFlush), (uint8_t*)sppStopFlush);
+        ESP_LOGE(FLUSH_TAG, "Error reading block %d from file", current_block_index);
+        return;
+    }
+
+    // Process the read block
+    printf("Block %d:\n%s\n", current_block_index + 1, block_buffer);
+    esp_spp_write(param->write.handle, strlen(block_buffer), (uint8_t*)block_buffer);
+
+    // Increment the current block index for the next function call
+    current_block_index++;
+
+    //sprintf(sppStopFlush, "%.1fF", test);
+    //esp_spp_write(param->write.handle, strlen(sppStopFlush), (uint8_t*)sppStopFlush);
+
+    //printf("Restarted command sending\n");
 }
 
 

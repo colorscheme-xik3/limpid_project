@@ -31,12 +31,10 @@
 #define POWER_MODE_ON 1
 #define POWER_MODE_OFF 0
 
-#define MAX_LINE_LENGTH 256
+#define MAX_LINE_LENGTH 500
 
 
 static const char *FLUSH_TAG = "Flush_Task"; // Tag for logging
-
-static FILE *csv_file = NULL;
 
 extern SemaphoreHandle_t actionT_semaphore;
 extern SemaphoreHandle_t actionP_semaphore;
@@ -48,6 +46,7 @@ typedef struct {
     uint16_t TDSolids;
     float Doxygen;
     float Turbidity;
+    char waterType[10];  // Define as character array to store water type string   
     char date[20];
 } WaterParams;
 
@@ -69,6 +68,12 @@ void LMPD_SYSTEM_handleActionP(esp_spp_cb_param_t *param, bool mode_flag);
 void LMPD_SYSTEM_handleActionS(esp_spp_cb_param_t *param, bool mode_flag);
 void LMPD_SYSTEM_handleActionD(esp_spp_cb_param_t *param, bool mode_flag);
 void LMPD_SYSTEM_handleActionB(esp_spp_cb_param_t *param, bool mode_flag);
+void LMPD_SYSTEM_handleActionH(esp_spp_cb_param_t *param, bool mode_flag);
+
+
+void LMPD_SYSTEM_handleAction_test(esp_spp_cb_param_t *param, bool mode_flag);
+
+
 
 void LMPD_SYSTEM_Time(char *date, bool mode_flag);
 void LMPD_SYSTEM_handleActionF(esp_spp_cb_param_t *param, bool mode_flag);

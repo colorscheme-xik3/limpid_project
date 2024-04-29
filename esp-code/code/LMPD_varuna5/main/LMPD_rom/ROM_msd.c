@@ -20,7 +20,7 @@ static long file_position = 0;
 
 static FILE *csv_file = NULL;
 
-#define MAX_LINE_LENGTH 256
+#define MAX_LINE_LENGTH 500
 
 
 
@@ -185,6 +185,7 @@ esp_err_t LMPD_device_read_block(const char *filename, char *block_buffer, size_
 
     char line_buffer[MAX_LINE_LENGTH];
     int empty_line_count = 0;
+    const char *separator = ","; // Separator string to use between parameters
 
     while (fgets(line_buffer, sizeof(line_buffer), csv_file) != NULL) {
         // Trim newline characters
@@ -209,7 +210,20 @@ esp_err_t LMPD_device_read_block(const char *filename, char *block_buffer, size_
         // Reset empty line count when a non-empty line is encountered
         empty_line_count = 0;
 
-        // Append the current line to the block buffer
+        // Find the position of the first comma in line_buffer
+        char *comma_ptr = strchr(line_buffer, ',');
+        if (comma_ptr != NULL) {
+            // Replace the first comma with a colon
+            *comma_ptr = ':';
+        }
+
+        // Append the current line to the block buffer with separator
+        if (strlen(block_buffer) > 0) {
+            // Add separator before appending new line
+            strncat(block_buffer, separator, buffer_size - strlen(block_buffer) - 1);
+        }
+
+        // Append the modified line (with colon) to block_buffer
         strncat(block_buffer, line_buffer, buffer_size - strlen(block_buffer) - 1);
 
         // Ensure the buffer does not exceed its size
@@ -218,6 +232,9 @@ esp_err_t LMPD_device_read_block(const char *filename, char *block_buffer, size_
             break;
         }
     }
+
+    // Append the "FLUSHED_data" marker to the block buffer
+    strncat(block_buffer, "FLUSHED_data", buffer_size - strlen(block_buffer) - 1);
 
     // Check if end of file is reached or error occurred
     if (feof(csv_file) || ferror(csv_file)) {
@@ -295,7 +312,7 @@ esp_err_t LMPD_device_writing(const char *filename, char *parameter, float data)
     return ESP_OK;
 }
 
-esp_err_t LMPD_device_writing_time(const char *filename, char *parameter, char* data)
+esp_err_t LMPD_device_writing_string(const char *filename, char *parameter, char* data)
 {   
 
     char info[200]; // Adjust size as needed
