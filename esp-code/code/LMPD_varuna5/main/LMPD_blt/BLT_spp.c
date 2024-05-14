@@ -106,28 +106,30 @@ void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         switch (received_data[0]) {
             case 'T':
                     ESP_LOGI(SPP_TAG, "Received 'T' on DS");
-                    LMPD_SYSTEM_handleActionT(handle_ds, param, sd_mode);
+                    LMPD_SYSTEM_handleActionT(handle_ds, param);
                 break;
             case 'P':
                     ESP_LOGI(SPP_TAG, "Received 'P' on adc_A0");
-                    LMPD_SYSTEM_handleActionP(param, sd_mode);
+                    LMPD_SYSTEM_handleActionP(param);
                 break;
             case 'S':
                     ESP_LOGI(SPP_TAG, "Received 'S'");
-                    LMPD_SYSTEM_handleActionS(param, sd_mode);
+                    LMPD_SYSTEM_handleActionS(param);
                 break;
             case 'O':
                     ESP_LOGI(SPP_TAG, "Received 'O'");
-                    LMPD_SYSTEM_handleActionD(param, sd_mode);
+                    LMPD_SYSTEM_handleActionD(param);
                 break;
             case 'B':
                     ESP_LOGI(SPP_TAG, "Received 'B'");
-                    LMPD_SYSTEM_handleActionB(param, sd_mode);
-
+                    LMPD_SYSTEM_handleActionB(param);
+                break;
+            case 'C':
+                    LMPD_BATTERY_status(param);
                 break;
             case 'H':
                     ESP_LOGI(SPP_TAG, "Received 'H'");
-                    LMPD_SYSTEM_handleActionH(param, sd_mode);
+                    LMPD_SYSTEM_handleActionH(param);
                 break;
             /* ---------------------------------------CONNECTION MODE COMMANDS------------------------------------------------*/
             case 'M':
@@ -142,9 +144,7 @@ void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 
             case 'F':
                     ESP_LOGI(SPP_TAG, "Starting Flush");
-                    //xTaskCreate(flushTask, "Flush_Task", 4096, param, 1, NULL);
-                    //LMPD_SYSTEM_handleActionF(param, sd_mode);
-                    LMPD_SYSTEM_handleAction_test(param, sd_mode);
+                    LMPD_SYSTEM_handleActionF(param);
 
 
                 break;
@@ -158,9 +158,8 @@ void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         if (strncmp(received_data, "DATE:", 5) == 0) 
         {
             char *date_string = received_data + 5; // Skip "DATE:" prefix        
-            //processDateString(dateString);
             ESP_LOGI(SPP_TAG, "Received date: %s", date_string);
-            LMPD_SYSTEM_Time(date_string, sd_mode);
+            LMPD_SYSTEM_Time(date_string);
             LMPD_SYSTEM_save_parameters(sd_mode);
 
         }
@@ -198,30 +197,6 @@ void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         break;
     }
 }
-
-// Implementation of processDateString function
-#include <string.h>
-#include <ctype.h>
-
-void processDateString(char *dateString) {
-    // Find the first space character to truncate the string after the date and time
-    char *spacePosition = strchr(dateString, ' ');
-    if (spacePosition != NULL) {
-        *spacePosition = '\0'; // Null-terminate the string after the date and time
-
-        // Calculate the size of the truncated date string
-        size_t size = strlen(dateString);
-
-        printf("Size of date string: %zu\n", size);
-    } else {
-        // Handle case where space is not found (invalid format)
-        // For example, log an error or perform appropriate error handling
-        printf("Invalid date string format\n");
-    }
-}
-
-
-
 
 
 void  esp_bt_gap_cb(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param)

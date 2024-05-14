@@ -1,3 +1,15 @@
+/**
+ * @file ROM_msd.c - LIMPID project
+ * @brief .c file to handle microSD card module
+ * @details This driver provides read and write functions using SPI protocol
+ * @version 1.0
+ * @date 2024-03-24
+ * 
+ * @author Francisco Duarte
+ *         Leonardo Rosa
+ *         
+ **/
+
 #include "ROM_msd.h"
 #include <stdio.h>
 #include <string.h>

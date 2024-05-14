@@ -39,8 +39,6 @@ extern bool bluetooth_connected;
 extern bool sd_mode;
 
 
-void processDateString(char *dateString);
-
 
 /**
  * @brief Converts Bluetooth device address to a string.

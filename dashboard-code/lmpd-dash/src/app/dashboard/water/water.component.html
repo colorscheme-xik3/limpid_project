@@ -1,110 +1,132 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
 <div class="main-container">
   <div class="container">
 
+    <!-- Temperature Card -->
     <div *ngIf="sensorValues$ | async as sensorValues">
       <div *ngFor="let timestamp of lastTimestamp">
-        <!-- Temperature Card -->
         <div class="card" id="temp">
           <p class="card-text">
-            <span>{{ sensorValues[timestamp]?.Temperature | slice: 0:-1 }}</span>
+            <span>{{ sensorValues[timestamp]?.Temperature }}</span>
             <span class="card-sub-text">ºC</span>
           </p>
           <p class="under-text">Temperature</p>
-          <input type="checkbox" id="tCheckbox" class="moon-checkbox" [(ngModel)]="showTemperature" (change)="updateChart()">
+          <input type="checkbox" id="tCheckbox" class="moon-checkbox" [(ngModel)]="showTemperature" (change)="redoAreaChart()">
           <label for="tCheckbox" class="moon-label"></label>
         </div>
       </div>
     </div>
 
+    <!-- Potential Hydrogen (pH) Card -->
     <div *ngIf="sensorValues$ | async as sensorValues">
       <div *ngFor="let timestamp of lastTimestamp">
-        <!-- pH Card -->
         <div class="card" id="ph">
           <p class="card-text">
-            <span>{{ sensorValues[timestamp]?.['Potential Hydrogen'] | slice: 0:-1 }}</span>
+            <span>{{ sensorValues[timestamp]?.['Potential Hydrogen'] }}</span>
             <span class="card-sub-text">pH</span>
           </p>
           <p class="under-text">Potential Hydrogen</p>
-          <input type="checkbox" id="phCheckbox" class="moon-checkbox" [(ngModel)]="showPotentialHydrogen" (change)="updateChart()">
+          <input type="checkbox" id="phCheckbox" class="moon-checkbox" [(ngModel)]="showPotentialHydrogen" (change)="redoAreaChart()">
           <label for="phCheckbox" class="moon-label"></label>
         </div>
       </div>
     </div>
-    <!-- Add more cards as needed -->
 
-    <div class="card" id="tds">
-      <p class="card-text"><span>1500</span><span class="card-sub-text"> ppm</span></p>
-      <p class="under-text">Total Dissolved Solids</p>
-      <input type="checkbox" id="tdsCheckbox" class="moon-checkbox">
-      <label for="tdsCheckbox" class="moon-label"></label>
+    <!-- Total Dissolved Solids (TDS) Card -->
+    <div *ngIf="sensorValues$ | async as sensorValues">
+      <div *ngFor="let timestamp of lastTimestamp">
+        <div class="card" id="tds">
+          <p class="card-text">
+            <span>{{ sensorValues[timestamp]?.['Total Dissolved Solids'] }}</span>
+            <span class="card-sub-text">TDS</span>
+          </p>
+          <p class="under-text">Total Dissolved Solids</p>
+          <input type="checkbox" id="tdsCheckbox" class="moon-checkbox" [(ngModel)]="showTDS" (change)="redoAreaChart()">
+          <label for="tdsCheckbox" class="moon-label"></label>
+        </div>
+      </div>
     </div>
 
-    <div class="card" id="do">
-      <p class="card-text"><span>1500</span><span class="card-sub-text">mg/L</span></p>
-      <p class="under-text">Dissolved Oxygen</p>
-      <input type="checkbox" id="doCheckbox" class="moon-checkbox">
-      <label for="doCheckbox" class="moon-label"></label>
+    <div *ngIf="sensorValues$ | async as sensorValues">
+      <div *ngFor="let timestamp of lastTimestamp">
+        <div class="card" id="tds">
+          <p class="card-text">
+            <span>{{ sensorValues[timestamp]?.['Dissolved Oxygen'] }}</span>
+            <span class="card-sub-text">mg/L</span>
+          </p>
+          <p class="under-text">Dissolved Oxygen</p>
+          <input type="checkbox" id="doCheckbox" class="moon-checkbox" [(ngModel)]="showDO" (change)="redoAreaChart()">
+          <label for="doCheckbox" class="moon-label"></label>
+        </div>
+      </div>
     </div>
 
-    <div class="card" id="turb">
-      <p class="card-text"><span>1500</span><span class="card-sub-text"></span></p>
-      <p class="under-text">Turbidity</p>
-      <input type="checkbox" id="turbCheckbox" class="moon-checkbox">
-      <label for="turbCheckbox" class="moon-label"></label>
+    <div *ngIf="sensorValues$ | async as sensorValues">
+      <div *ngFor="let timestamp of lastTimestamp">
+        <div class="card" id="tds">
+          <p class="card-text">
+            <span>{{ sensorValues[timestamp]?.['Turbidity'] }}</span>
+            <span class="card-sub-text">NTU</span>
+          </p>
+          <p class="under-text">Turbidity</p>
+          <input type="checkbox" id="turbCheckbox" class="moon-checkbox" [(ngModel)]="showTurb" (change)="redoAreaChart()">
+          <label for="turbCheckbox" class="moon-label"></label>
+        </div>
+      </div>
     </div>
 
   </div>
 
-  <!-- Move chart-grid outside of the container -->
+  <!-- Chart Section -->
   <div class="chart-grid">
-    <!-- Add more squares as needed -->
+
     <div class="chart" id="chart1"></div>
-    <div class="chart" id="chart2">
+
+
+
+    <!-- Toolbox Section -->
+    <div class="chart" id="chart1">
       <div class="toolbox">
-        
         <div class="card_display">
           <div class="display">
-            <span class="material-icons">
-              water_drop
-            </span>
-            <div class="display_text">
-              Saltwater - {{ selectedDuration }} days
-            </div>
-  
-         
+            <span class="material-icons">water_drop</span>
+            <div class="display_type">{{selectedWaterType}}</div>
+            <div class="display_duration">{{selectedDuration}} days</div>
+            
           </div>
         </div>
 
+
+
+        <!-- Duration Selection -->
         <div class="radio-input">
           <input type="radio" id="value-1" name="value-radio" value="5" [(ngModel)]="selectedDuration" (change)="onDurationChange()">
           <div class="circle"></div>
-        
+
           <input type="radio" id="value-2" name="value-radio" value="10" [(ngModel)]="selectedDuration" (change)="onDurationChange()">
           <div class="circle"></div>
-        
+
           <input type="radio" id="value-3" name="value-radio" value="30" [(ngModel)]="selectedDuration" (change)="onDurationChange()">
           <div class="circle"></div>
         </div>
 
-
-        
+        <!-- Graph Type Selection -->
         <div class="radio-input">
-          <input type="radio" id="graph-1" name="graph-radio">
+          <input type="radio" id="tapwater" name="water-type" value="TAP WATER" [(ngModel)]="selectedWaterType" (change)="onWaterTypeChange()">
+          <div class="circle_graph"></div>
+
+          <input type="radio" id="saltwater" name="water-type" value="SALT WATER" [(ngModel)]="selectedWaterType" (change)="onWaterTypeChange()">
           <div class="circle_graph"></div>
         
-          <input type="radio" id="graph-2" name="graph-radio">
-          <div class="circle_graph"></div>
-        
-          <input type="radio" id="graph-3" name="graph-radio">
+          <input type="radio" id="freshwater" name="water-type" value="FRESH WATER" [(ngModel)]="selectedWaterType" (change)="onWaterTypeChange()">
           <div class="circle_graph"></div>
         </div>
-        
-         
-        
-        <button>graph</button>
-        <button>full</button>
 
+        <!-- Buttons -->
+
+        <button (click)="toggleChartType()">Chart</button>
+        <button (click)="toggleChartType()">Full</button>
 
       </div>
     </div>

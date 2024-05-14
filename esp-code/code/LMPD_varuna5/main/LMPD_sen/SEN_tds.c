@@ -5,8 +5,7 @@ float sen0244_processing(float voltage, float temperature)
     float compensationCoefficient=1.0+0.02*(temperature-25.0);   
     float compensationVolatge = voltage / compensationCoefficient;  
 
-    //return  (133.42 * compensationVolatge * compensationVolatge * compensationVolatge) - (255.86 * compensationVolatge * compensationVolatge) + (857.39 * compensationVolatge) * 0.5;
-    return  (133.42 * voltage * voltage * voltage) - (255.86 * voltage * voltage) + (857.39 * voltage) * 0.5;
+    return  (133.42 * compensationVolatge * compensationVolatge * compensationVolatge) - (255.86 * compensationVolatge * compensationVolatge) + (857.39 * compensationVolatge) * 0.5;
 
 }
 

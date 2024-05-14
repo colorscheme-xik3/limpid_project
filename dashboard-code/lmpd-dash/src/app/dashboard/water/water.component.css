@@ -101,8 +101,8 @@ label {
 .chart-grid {
   display: flex;
   margin-left: 5%;
-  
 }
+
 
 .chart {
   flex: 1; /* Each chart will take up equal space */
@@ -110,6 +110,9 @@ label {
   margin-left: 2%;
 
 }
+
+
+
 
 .chart:first-child {
   flex: 8; /* 70% width for the first chart */
@@ -171,23 +174,37 @@ label {
 }
 
 .display {
-  width: 100%;
+  width: 120%;
   height: 50px;
   background-color: #000;
-  position: relative;
+  position: flex;
   display: flex;
-    justify-content: center;
   align-items: center; /* Center vertically */
 }
 
-.display_text {
+.display_duration {
+  font-size: 10px;
+  color: #f3d632;
+  text-align: center;
+}
+
+.display_type {
   font-size: 10px;
   color: #93acff;
+  margin-right: 5px;
+}
+
+.display_error {
+  font-size: 5px;
+  color: #93acff;
+  margin-right: 5px;
 }
 
 .material-icons {
   font-size: 20px;
   color: #93acff;
+  margin-left: 10px;
+
 }
 
 .radio-input {
@@ -219,7 +236,7 @@ label {
   left: -1.1em;
   width: 0.6em;
   height: 0.6em;
-  background-color: #93acff;
+  background-color: #f3d632;
   scale: 0;
   border-radius: 10px;
   transition: .4s ease-in-out;
@@ -231,7 +248,7 @@ label {
   left: -1.1em;
   width: 0.6em;
   height: 0.6em;
-  background-color: #f3d632;
+  background-color: #93acff;
   scale: 0;
   border-radius: 10px;
   transition: .4s ease-in-out;
