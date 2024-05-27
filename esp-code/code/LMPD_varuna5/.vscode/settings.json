@@ -20,7 +20,10 @@
     "string_view": "c",
     "adc_ads.h": "c",
     "cmath": "c",
-    "complex": "c"
+    "complex": "c",
+    "sen_tds.h": "c",
+    "sen_turb.h": "c",
+    "rom_msd.h": "c"
   },
   "idf.openOcdConfigs": [
     "board/esp32-wrover-kit-3.3v.cfg"

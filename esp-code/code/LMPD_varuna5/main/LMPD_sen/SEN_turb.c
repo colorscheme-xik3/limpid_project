@@ -3,26 +3,22 @@
 char* sen0189_processing(float voltage)
 {    
     float ntu = - (2572.2 * voltage * voltage) + (8700.5 * voltage) - 3850.9;
-    if(ntu < 0)
+    if(ntu < NTU_CLEAR_THRESHOLD)
     {
         ntu = 0;
         return "clear";
     }
-    else if(ntu > 0 && ntu < 60)
+    else if(ntu <= NTU_CLOUDY_THRESHOLD)
     {
         return "cloudy";
     }
-    else if(ntu > 60 && ntu < 400)
+    else if(ntu <= NTU_MODERATE_THRESHOLD)
     {
         return "moderate";
-
     }
-    else if(ntu > 400)
+    else
     {
-        ntu = 3000;
+        ntu = MAX_NTU_VALUE;
         return "dirty";
-    }
-    else{
-        return "error";
     }
 }

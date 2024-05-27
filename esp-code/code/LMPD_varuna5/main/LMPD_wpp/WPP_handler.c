@@ -17,7 +17,7 @@ WaterQualitySpecs waterQualityStandards[] = {
     },
     {
         {6.5, 9.5},     // pH
-        {50, 300},      // TDS ppm
+        {20, 300},      // TDS ppm
         {6.5, 8},       // Dissolved oxygen mg/L
         {1, 5}          // NTU
     },

@@ -29,8 +29,8 @@ static const char *TAG_ADS = "ADC_ADS";
 #define ADS1115_SENSOR_ADDR                 0x48        /*!< Slave address of the MPU9250 sensor */
 #define ADS1115_CONFIG_REG                  0x01
 #define ADS1115_CONV_REG                    0X00
-#define ADS1115_CONFIG_MSB_A0               0xC3
-#define ADS1115_CONFIG_MSB_A1               0xD3
+#define ADS1115_CONFIG_MSB_A0               0xC2
+#define ADS1115_CONFIG_MSB_A1               0xD2
 #define ADS1115_CONFIG_MSB_A2               0xE2
 #define ADS1115_CONFIG_MSB_A3               0xF2
 #define ADS1115_CONFIG_LSB                  0x83

@@ -1,8 +1,21 @@
-/*
- * SPDX-FileCopyrightText: 2022 Espressif Systems (Shanghai) CO LTD
- *
- * SPDX-License-Identifier: Unlicense OR CC0-1.0
+/**
+ * @file SEN_sd.h
+ * @brief Header file for DS18B20 Temperature Sensor Interface
+ * @details This file contains definitions, structures, and function prototypes for interfacing
+ *          with the DS18B20 digital temperature sensor. It provides functionality for triggering
+ *          temperature conversions, reading temperatures, setting resolution, and managing
+ *          communication over the 1-Wire protocol.
+ * @version 1.0
+ * @date 2022-07-24
+ * 
+ * @author Espressif Systems (Shanghai) CO LTD
+ * 
+ * @note This module requires the inclusion of "onewire_bus.h" for 1-Wire bus communication.
+ *       The DS18B20 sensor allows for configurable resolution settings, affecting the conversion
+ *       time and power consumption. Users should select the resolution based on their application
+ *       needs.
  */
+
 #pragma once
 
 #ifndef SEN_DS_H_

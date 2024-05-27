@@ -23,7 +23,19 @@
 
 #define SPP_TAG "SPP_ACCEPTOR_DEMO"
 #define SPP_SERVER_NAME "SPP_SERVER"
-#define EXAMPLE_DEVICE_NAME "ESP_SPP_ACCEPTOR"
+
+
+// Define a macro to choose between Mazu and Varuna
+#define DEVICE_CHOICE 1 // Set to 0 for Mazu, 1 for Varuna
+
+#if DEVICE_CHOICE == 0
+    #define EXAMPLE_DEVICE_NAME "MAZU2"
+#elif DEVICE_CHOICE == 1
+    #define EXAMPLE_DEVICE_NAME "VARUNA5"
+#else
+    #error "Invalid device choice. Must be either 0 (Mazu) or 1 (Varuna)."
+#endif
+
 #define SPP_SHOW_DATA 0
 #define SPP_SHOW_SPEED 1
 #define SPP_SHOW_MODE SPP_SHOW_DATA    /*Choose show mode: show data or speed*/

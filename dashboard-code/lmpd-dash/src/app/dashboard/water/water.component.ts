@@ -4,6 +4,7 @@ import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { switchMap, startWith, distinctUntilChanged } from 'rxjs/operators';
 import ApexCharts from 'apexcharts';
+import { ApexOptions } from 'apexcharts';
 
 interface SensorValues {
   [key: string]: {
@@ -30,7 +31,7 @@ export class WaterComponent implements OnInit {
   lastFiveTimestamps: string[] | null = null;
   private sensorValuesSubject = new BehaviorSubject<SensorValues | null>(null);  
   private chart: ApexCharts | null = null;
-  private chartRadar: ApexCharts | null = null;
+  private   chartRadar: ApexCharts | null = null;
   showTemperature: boolean = true; // Variable to control temperature visibility
   showPotentialHydrogen: boolean = true; // Variable to control potential hydrogen visibility
   showTDS: boolean = true; // Variable to control potential hydrogen visibility
@@ -43,7 +44,7 @@ export class WaterComponent implements OnInit {
 
   timestamps: string = ''; // Declare timestamps property here
   selectedDuration: string = ''; // Initialized with an empty string
-
+  chartKey: number = 0; // Key to force re-render of the chart
   constructor(private db: AngularFireDatabase, private afAuth: AngularFireAuth) {}
 
   ngOnInit() {
@@ -103,7 +104,7 @@ export class WaterComponent implements OnInit {
 
 
   private computeAverageValuesAcrossTimestamps(sensorValues: SensorValues, timestamps: string[]): number[] {
-    const totalValues: number[] = [0, 0, 0, 0, 0]; // Initialize total values array
+    const totalValues: number[] = [0, 0, 0, 0]; // Initialize total values array
     let count = 0; // Initialize count of valid entries
 
     timestamps.forEach(timestamp => {
@@ -113,7 +114,6 @@ export class WaterComponent implements OnInit {
         totalValues[1] += parseFloat(entry["Potential Hydrogen"]) || 0;
         totalValues[2] += parseFloat(entry["Total Dissolved Solids"]) || 0;
         totalValues[3] += parseFloat(entry["Dissolved Oxygen"]) || 0;
-        totalValues[4] += parseFloat(entry["Turbidity"]) || 0;
         count++;
       }
     });
@@ -138,26 +138,39 @@ export class WaterComponent implements OnInit {
   toggleChartType(): void {
     this.showAreaChart = !this.showAreaChart; // Toggle the chart type flag
     console.log('showAreaChart:', this.showAreaChart); // Log the current state of showAreaChart
-  
+
+    // Increment the chart key to force re-render
+    this.chartKey++;
+
     if (this.showAreaChart) {
-      // Update the chart to display area chart
+      // Destroy the radar chart if it exists
+      if (this.chartRadar) {
+        this.chartRadar.destroy();
+        this.chartRadar = null;
+      }
+      // Initialize and update the area chart
       this.initializeChart();
       this.updateAreaChart(); // Update with area chart data
     } else {
-      // Update the chart to display radar chart
+      // Destroy the area chart if it exists
+      if (this.chart) {
+        this.chart.destroy();
+        this.chart = null;
+      }
+      // Initialize and update the radar chart
       if (this.latestSensorValues) {
         // Determine the timestamps based on the selected duration
         const selectedDuration = parseInt(this.selectedDuration, 10);
         const timestamps = this.getLastTimestamps(this.latestSensorValues, selectedDuration);
-  
+
         if (timestamps) {
           // Compute average values based on the filtered timestamps
           const averageValues = this.computeAverageValuesAcrossTimestamps(this.latestSensorValues, timestamps);
-          
+
           // Initialize and update radar chart with computed average values
-          this.initializeRadar(averageValues);
-          this.updateRadarChart(averageValues);
-  
+          this.initializeRadialBar(averageValues);
+          //this.updateRadarChart(averageValues);
+
           if (timestamps.length === 0) {
             console.warn('No timestamps available for the selected duration.');
           }
@@ -201,10 +214,18 @@ onDurationChange(): void {
 
   
 
-  onWaterTypeChange(): void {
-    console.log('Selected Water Type:', this.selectedWaterType);
-    this.updateAreaChart(); // Update chart data based on selected water type
+onWaterTypeChange(): void {
+  console.log('Selected Water Type:', this.selectedWaterType);
+  this.updateAreaChart(); // Update chart data based on selected water type
+
+  // Compute average values based on the latest sensor values and lastFiveTimestamps
+  if (this.latestSensorValues && this.lastFiveTimestamps) {
+    const averageValues = this.computeAverageValuesAcrossTimestamps(this.latestSensorValues, this.lastFiveTimestamps);
+    this.updateRadarChart(averageValues); // Update radar chart data based on selected water type
+  } else {
+    console.warn('Not enough data to update the radar chart.');
   }
+}
   
   
 
@@ -218,7 +239,6 @@ onDurationChange(): void {
           "Potential Hydrogen"?: number;
           "Total Dissolved Solids"?: number;
           "Dissolved Oxygen"?: number;
-          "Turbidity"?: number;
         } = { Timestamp: timestamp };
   
         // Check if sensorValue exists and matches the selected water type
@@ -235,9 +255,6 @@ onDurationChange(): void {
           }
           if (this.showDO) {
             entry["Dissolved Oxygen"] = parseFloat(sensorValue[timestamp]?.['Dissolved Oxygen']);
-          }
-          if (this.showTurb) {
-            entry["Turbidity"] = parseFloat(sensorValue[timestamp]?.['Turbidity']);
           }
         }
   
@@ -276,12 +293,6 @@ onDurationChange(): void {
           data: filteredSensorValues.map(entry => entry["Dissolved Oxygen"] ?? null),
         });
       }
-      if (this.showTurb) {
-        series.push({
-          name: 'Turbidity',
-          data: filteredSensorValues.map(entry => entry["Turbidity"] ?? null),
-        });
-      }
   
       this.chart.updateSeries(series.filter(s => s.data.some(val => val !== null))); // Filter out series with all null values
   
@@ -304,25 +315,71 @@ onDurationChange(): void {
     }
   }
 
-   updateRadarChart(highestValues: number[]): void {
-    if (this.chartRadar && this.sensorValuesSubject) {
-      const categories = ['Temperature', 'Potential Hydrogen', 'Total Dissolved Solids', 'Dissolved Oxygen', 'Turbidity', 'Water Type'];
   
-      // Map the highest values to the corresponding categories
-      const data = highestValues.map((value, index) => {
-        return { x: categories[index], y: value };
+  updateRadarChart(averageValues: number[]) {
+    if (this.latestSensorValues && this.lastFiveTimestamps) {
+      const filteredSensorValues = this.lastFiveTimestamps.map(timestamp => {
+        const sensorValue = this.latestSensorValues;
+        const entry: {
+          Temperature?: number;
+          "Potential Hydrogen"?: number;
+          "Total Dissolved Solids"?: number;
+          "Dissolved Oxygen"?: number;
+          "Turbidity"?: number;
+        } = {};
+  
+        // Check if sensorValue exists and matches the selected water type
+        if (sensorValue && sensorValue[timestamp]?.["Water Type"] === this.selectedWaterType) {
+          // Include sensor values only if they match the selected water type
+          if (this.showTemperature) {
+            entry.Temperature = parseFloat(sensorValue[timestamp]?.Temperature);
+          }
+          if (this.showPotentialHydrogen) {
+            entry["Potential Hydrogen"] = parseFloat(sensorValue[timestamp]?.['Potential Hydrogen']);
+          }
+          if (this.showTDS) {
+            entry["Total Dissolved Solids"] = parseFloat(sensorValue[timestamp]?.['Total Dissolved Solids']);
+          }
+          if (this.showDO) {
+            entry["Dissolved Oxygen"] = parseFloat(sensorValue[timestamp]?.['Dissolved Oxygen']);
+          }
+          if (this.showTurb) {
+            entry["Turbidity"] = parseFloat(sensorValue[timestamp]?.['Turbidity']);
+          }
+        }
+  
+        return entry;
       });
   
-      const series = [{ name: 'Highest Values', data: data }];
+      // Compute average values for the filtered sensor values
+      const totalValues: number[] = [0, 0, 0, 0, 0]; // Initialize total values array for all parameters
+      let count = 0; // Initialize count of valid entries
   
-      this.chartRadar.updateSeries(series);
-      this.chartRadar.updateOptions({
-        xaxis: {
-          categories: categories,
-        },
+      filteredSensorValues.forEach(entry => {
+        if (entry.Temperature !== undefined) totalValues[0] += entry.Temperature;
+        if (entry["Potential Hydrogen"] !== undefined) totalValues[1] += entry["Potential Hydrogen"];
+        if (entry["Total Dissolved Solids"] !== undefined) totalValues[2] += entry["Total Dissolved Solids"];
+        if (entry["Dissolved Oxygen"] !== undefined) totalValues[3] += entry["Dissolved Oxygen"];
+        if (entry["Turbidity"] !== undefined) totalValues[4] += entry["Turbidity"];
+        count++;
       });
+  
+      // Calculate averages
+      const averageValues = totalValues.map(value => (count > 0 ? value / count : 0));
+  
+      // Update the radar chart with the computed average values
+      if (this.chartRadar) {
+        const series = averageValues.map((value, index) => ({
+          name: ['Temperature', 'Potential Hydrogen', 'Total Dissolved Solids', 'Dissolved Oxygen', 'Turbidity'][index],
+          data: [value]
+        }));
+  
+        this.chartRadar.updateSeries(series);
+      } else {
+        console.warn('Radar chart is not initialized.');
+      }
     } else {
-      console.warn('Not enough data to update the radar chart.');
+      console.warn('No timestamps available to update the radar chart.');
     }
   }
   
@@ -337,14 +394,14 @@ onDurationChange(): void {
   private getLastTimestamps(sensorValues: { [key: string]: { Temperature: string, "Potential Hydrogen": string } }, n: number): string[] | null {
     const timestamps = Object.keys(sensorValues || {});
     const length = timestamps.length;
-
+  
     if (length >= n) {
       return timestamps.slice(-n);
-    } else if (length === 1) {
-      // If there's only one timestamp, return an array with the same timestamp (no nth-to-last)
-      return [timestamps[0]];
+    } else if (length > 0) {
+      // Return all available timestamps if there are fewer than the requested number
+      return timestamps;
     } else {
-      // No timestamps or not enough timestamps
+      // No timestamps available
       return null;
     }
   }
@@ -358,12 +415,15 @@ onDurationChange(): void {
     }
   }
 
-  private initializeRadar(highestValues: number[]): void {
+  private initializeRadialBar(averageValues: number[]): void {
     if (!this.chartRadar) {
       // Create an ApexCharts instance for the chart
-      this.chartRadar = new ApexCharts(document.getElementById('chart1'), this.getRadarOptions(highestValues));
+      this.chartRadar = new ApexCharts(document.getElementById('chart1'), this.getRadialBarOptions(averageValues));
       // Render the chart
       this.chartRadar.render();
+    } else {
+      // Update the chart if it already exists
+      this.chartRadar.updateOptions(this.getRadialBarOptions(averageValues));
     }
   }
 
@@ -374,14 +434,14 @@ onDurationChange(): void {
   
     // Configure colors and styles based on sensor visibility
     if (this.showTemperature) {
-      seriesColors.push('#FFFFFF'); // Green color for Temperature series
-      dataLabelColors.push('#000000'); // Label color for Temperature series
+      seriesColors.push('#509BA8'); // Green color for Temperature series
+      dataLabelColors.push('#509BA8'); // Label color for Temperature series
       yAxisColors.push('#FFFFFF'); // Color for second y-axis (Dissolved Oxygen)
-
+      
     }
     if (this.showPotentialHydrogen) {
-      seriesColors.push('#509BA8'); // Yellow color for Potential Hydrogen series
-      dataLabelColors.push('#509BA8'); // Label color for Potential Hydrogen series
+      seriesColors.push('#F4BB00'); // Yellow color for Potential Hydrogen series
+      dataLabelColors.push('#F4BB00'); // Label color for Potential Hydrogen series
       yAxisColors.push('#FFFFFF'); // Color for second y-axis (Dissolved Oxygen)
 
     }
@@ -392,8 +452,8 @@ onDurationChange(): void {
 
     }
     if (this.showDO) {
-      seriesColors.push('#F4BB00'); // Blue color for Dissolved Oxygen series
-      dataLabelColors.push('#F4BB00'); // Label color for Dissolved Oxygen series
+      seriesColors.push('#65469E'); // Blue color for Dissolved Oxygen series
+      dataLabelColors.push('#65469E'); // Label color for Dissolved Oxygen series
       yAxisColors.push('#FFFFFF'); // Color for second y-axis (Dissolved Oxygen)
     }
     if (this.showTurb) {
@@ -406,7 +466,7 @@ onDurationChange(): void {
       series: [],
       chart: {
         height: 450,
-        type: 'area',
+        type: 'line',
         toolbar: {
           show: false,
         },
@@ -477,60 +537,152 @@ onDurationChange(): void {
   }
 
 
-  private getRadarOptions(highestValues: number[]): ApexCharts.ApexOptions {
-    const dataLabelColors = ['#000000'];
+  private getRadialBarOptions(averageValues: number[]): ApexCharts.ApexOptions {
+    const minValues = [-5, 1, 0, 0]; // Define minimum values for each parameter
+    const maxValues = [40, 14, 10000, 20]; // Define maximum values for each parameter
   
+    // Convert average values to percentages
+    const percentageValues = averageValues.map((value, index) => {
+      const min = minValues[index];
+      const max = maxValues[index];
+      return ((value - min) / (max - min)) * 100;
+    });
+
+    
+    const units = ['°C', 'pH', 'ppm', 'mg/L']; // Units for each parameter
     return {
-      series: [
-        {
-          name: 'Series 1',
-          data: highestValues  // Use the computed highest values for radar chart data
-        }
-      ],
+      series: percentageValues, // Use the percentage values for each parameter
       chart: {
         height: 450,
-        type: 'radar'
-      },
-      xaxis: {
-        categories: ['Temperature', 'Potential Hydrogen', 'Total Dissolved Solids', 'Dissolved Oxygen', 'Turbidity', 'Water Type'],
-        labels: {
-          style: {
-            colors: '#FFFFFF'
+        type: 'radialBar',
+        offsetY: 0,
+        events: {
+          dataPointMouseEnter: function(event, chartContext, config) {
+            const index = config.dataPointIndex;
+            const actualValue = averageValues[index];
+            chartContext.updateOptions({
+              plotOptions: {
+                radialBar: {
+                  dataLabels: {
+                    total: {
+                      label: config.w.globals.labels[index],
+                      formatter: function() {
+                        return actualValue.toFixed(2); // Return the actual value with two decimal places
+                      }
+                    }
+                  }
+                }
+              }
+            }, false, false);
+          },
+          dataPointMouseLeave: function(event, chartContext, config) {
+            chartContext.updateOptions({
+              plotOptions: {
+                radialBar: {
+                  dataLabels: {
+                    total: {
+                      formatter: function() {
+                        const total = averageValues.reduce((acc, val) => acc + val, 0);
+                        return total.toFixed(2); // Return the total value with two decimal places
+                      }
+                    }
+                  }
+                }
+              }
+            }, false, false);
           }
         }
       },
-      yaxis: {
-        labels: {
-          style: {
-            colors: '#FFFFFF'
+      plotOptions: {
+        radialBar: {
+          startAngle: 0,
+          endAngle: 270,
+          hollow: {
+            background: 'transparent',
+            image: undefined,
+            imageOffsetX: 0,
+            imageOffsetY: 0,
+            position: 'front',
+            dropShadow: {
+              enabled: true,
+              top: 3,
+              left: 0,
+              blur: 4, // Correct property for dropShadow
+              opacity: 0.24
+            }
+          },
+          track: {
+            background: '#e0e0e0',
+            strokeWidth: '70%',
+            margin: 5, // margin is in pixels
+            dropShadow: {
+              enabled: true,
+              top: -3,
+              left: 0,
+              blur: 4, // Correct property for dropShadow
+              opacity: 0.15
+            }
+          },
+          dataLabels: {
+            show: true,
+            name: {
+              offsetY: -10,
+              show: false,
+              color: '#FFF67F',
+              fontSize: '12px'
+            },
+            value: {
+                formatter: function(val) {
+                  // Default formatter for value
+                  return val.toFixed(2); // Return the value with two decimal places
+                },
+              color: '#FFFFFF',
+              fontSize: '50px',
+              show: true,
+              offsetY: 16
+            },
+            total: {
+              show: true,
+              formatter: function() {
+                const total = averageValues.reduce((acc, val) => acc + val, 0);
+                return total.toFixed(2) ; // Return the total value with two decimal places
+              },
+              color: '#FFFFFF',
+              fontSize: '16px'
+            }
+          },
+          barLabels: {
+            enabled: true,
+            useSeriesColors: true,
+            margin: 20,
+            fontSize: '16px',
+            formatter: function(seriesName, opts) {
+              return seriesName + ' ' + '(' + units[opts.seriesIndex] + ')';
+            },
+          },
+        }
+      },
+      stroke: {
+        lineCap: 'round'
+      },
+      colors: ['#509BA8', '#F5BC00', '#E62300', '#67409E'], // Custom colors for the legend labels
+      labels: ['Temperature', 'Potential Hydrogen', 'Total Dissolved Solids', 'Dissolved Oxygen'],
+      
+      
+      responsive: [{
+        breakpoint: 480,
+        options: {
+          legend: {
+            show: false
           }
         }
-      },
-      markers: {
-        size: 0
-      },
-      dataLabels: {
-        enabled: true,
-        style: {
-          colors: dataLabelColors
-        }
-      },
-      tooltip: {
-        shared: true,
-        intersect: false,
-        style: {
-          fontSize: '12px'
-        },
-        theme: 'dark'
-      },
-      legend: {
-        labels: {
-          colors: '#FFFFFF'
-        }
-      }
+      }]
     };
   }
-    
+  
+  
+  
+      
 }
 
 

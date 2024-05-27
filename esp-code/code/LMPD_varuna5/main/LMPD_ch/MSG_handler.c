@@ -33,17 +33,21 @@ void LMPD_SYSTEM_handleActionT(onewire_bus_handle_t handle_ds, esp_spp_cb_param_
 
 void LMPD_SYSTEM_handleActionP(esp_spp_cb_param_t *param)
 {
-    char sppVoltageA0[10] = "";
+    char sppVoltageA0[4] = "";
 
+    LMPD_PH_selector(PH_SENSOR);
     LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A0, ADS1115_CONFIG_LSB);
+
     float raw_A0 = (LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A0, ADS1115_CONFIG_LSB));
     float mvolt_A0 = ((raw_A0* 4.096) / (32767))*1000;
-    LastParams.PHydrogen = mvolt_A0;
+    
+    LastParams.PHydrogen = LMPD_PH_calibrator(CALIBRATION_POINTS, raw_A0);
+
+    ESP_LOGI(TAG_ADS, "Raw - %f | PH Value: %f | %f",raw_A0,  mvolt_A0, LastParams.PHydrogen);
 
     sprintf(sppVoltageA0, "%.1fP", LastParams.PHydrogen);
     esp_spp_write(param->write.handle, strlen(sppVoltageA0), (uint8_t*)sppVoltageA0);
 }
-
 
 void LMPD_SYSTEM_handleActionS(esp_spp_cb_param_t *param)
 {
@@ -53,7 +57,7 @@ void LMPD_SYSTEM_handleActionS(esp_spp_cb_param_t *param)
     float raw_A1 = (LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A1, ADS1115_CONFIG_LSB));
     float mvolt_A1 = ((raw_A1* 4.096) / (32767));
 
-    LastParams.TDSolids = (uint16_t)sen0244_processing(mvolt_A1, 34.0);
+    LastParams.TDSolids = (uint16_t)sen0244_processing(mvolt_A1, 23);
     sprintf(sppVoltageA1, "%dS",  LastParams.TDSolids);
 
     ESP_LOGI(TAG_ADS, "TDS Value: %f | %d", mvolt_A1, LastParams.TDSolids);
@@ -63,12 +67,14 @@ void LMPD_SYSTEM_handleActionS(esp_spp_cb_param_t *param)
 
 void LMPD_SYSTEM_handleActionD(esp_spp_cb_param_t *param)
 {
-    char sppVoltageA2[10] = "4.5O";
+    char sppVoltageA2[4] = "";
     LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A2, ADS1115_CONFIG_LSB);
     float raw_A2 = (LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A2, ADS1115_CONFIG_LSB));
     float mvolt_A2 = ((raw_A2* 4.096) / (32767))*1000;
-    LastParams.Doxygen = mvolt_A2;
-    ESP_LOGI(TAG_ADS, "DO Value: %.1f", LastParams.Doxygen);
+    LastParams.Doxygen = sen0237_processing(mvolt_A2, 23);
+    sprintf(sppVoltageA2, "%.1fO",  LastParams.Doxygen);
+
+    ESP_LOGI(TAG_ADS, " mvolt - %f - DO Value: %.1f", mvolt_A2,  LastParams.Doxygen);
 
     esp_spp_write(param->write.handle, strlen(sppVoltageA2), (uint8_t*)sppVoltageA2);
 
@@ -197,15 +203,35 @@ void LMPD_SYSTEM_PM(bool power_mode)
 void LMPD_BATTERY_status(esp_spp_cb_param_t *param)
 {
     // Configure ADC to read from GPIO 14 (ADC1 channel 6)
-    char status_charge[10] = ""; 
+    char status_charge[30] = ""; 
+    char value_charge[10] = ""; 
+    char combined_message[50] = ""; // Allocate enough space for the combined message
+
+    gpio_config_t io_conf;
+    io_conf.intr_type = GPIO_INTR_DISABLE;      // Disable interrupt
+    io_conf.mode = GPIO_MODE_INPUT;             // Set as input mode
+    io_conf.pin_bit_mask = (1ULL << GPIO_PIN_STAT); // Set the GPIO pin bit mask
+    io_conf.pull_up_en = GPIO_PULLUP_DISABLE;   // Disable pull-up resistor
+    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE; // Disable pull-down resistor
+
+    gpio_config(&io_conf); // Configure GPIO pin settings
+
+    if (gpio_get_level(GPIO_PIN_STAT))
+    {
+        strcpy(status_charge, "Completed/unplaced");   
+    }
+    else
+    {
+        strcpy(status_charge, "Energizing");   
+    }
 
     ESP_ERROR_CHECK(adc1_config_width(ADC_WIDTH_BIT_DEFAULT));
     ESP_ERROR_CHECK(adc2_config_channel_atten(ADC2_CHANNEL_6, ADC_ATTEN_DB_11));
 
+    esp_adc_cal_characteristics_t adc2_chars;
     esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_UNIT_2, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, 0, &adc2_chars);
 
     int raw_value;
-        
     esp_err_t err = adc2_get_raw(ADC2_CHANNEL_6, ADC_WIDTH_BIT_12, &raw_value);
     if (err != ESP_OK) {
         ESP_LOGE(BAT_TAG, "ADC2 read error: %d", err);
@@ -214,9 +240,15 @@ void LMPD_BATTERY_status(esp_spp_cb_param_t *param)
 
     uint16_t voltage_mv = esp_adc_cal_raw_to_voltage(raw_value, &adc2_chars);
 
-    sprintf(status_charge, "%luC", voltage_mv);
-    esp_spp_write(param->write.handle, strlen(status_charge), (uint8_t*)status_charge);
+    sprintf(value_charge, "%umV", voltage_mv); // Format voltage as a string
 
-    // Print the voltage using ESP_LOGI
-    ESP_LOGI(BAT_TAG, "Input Pin Voltage: %s - %lu mV", status_charge, voltage_mv);
+    // Combine status and value into one string
+    sprintf(combined_message, "Status: %s, Voltage: %s", status_charge, value_charge);
+    
+    // Send the combined message using esp_spp_write
+    esp_spp_write(param->write.handle, strlen(combined_message), (uint8_t*)combined_message);
+
+    // Print the combined message using ESP_LOGI
+    ESP_LOGI(BAT_TAG, "Battery Status and Voltage: %s", combined_message);
 }
+

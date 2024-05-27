@@ -33,13 +33,17 @@
 
 #include "../LMPD_adc/ADC_ads.h"
 #include "../LMPD_sen/SEN_ds.h"
+#include "../LMPD_sen/SEN_ph.h"
 #include "../LMPD_sen/SEN_tds.h"
+#include "../LMPD_sen/SEN_do.h"
 #include "../LMPD_sen/SEN_turb.h"
 #include "../LMPD_rom/ROM_msd.h"
 
 
 
-#define GPIO_PIN_POWER  GPIO_NUM_5  // Breakout power GPIO
+#define GPIO_PIN_POWER  GPIO_NUM_5   // Breakout power GPIO
+#define GPIO_PIN_STAT   GPIO_NUM_13  // Breakout power GPIO
+
 #define ADC_CHANNEL ADC_CHANNEL_6 // GPIO 14 corresponds to ADC1 channel 6
 
 #define POWER_MODE_ON 1             

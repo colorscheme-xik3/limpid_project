@@ -110,7 +110,7 @@ uint16_t LMPD_I2C_configureADS(uint8_t address, uint8_t reg1, uint8_t reg2) {
         return 0;
     }
 
-    vTaskDelay(pdMS_TO_TICKS(200)); // Adjust the delay time as needed
+    vTaskDelay(pdMS_TO_TICKS(300)); // Adjust the delay time as needed
 
     // Create a new I2C command handle
     cmd = i2c_cmd_link_create();

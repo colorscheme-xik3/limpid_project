@@ -32,9 +32,12 @@
 #include "LMPD_rom/ROM_msd.h"
 #include "LMPD_wpp/WPP_handler.h"
 
+#include "esp_pm.h"
+
 
 #define GPIO_PIN_NUMBER  GPIO_NUM_4  // Replace XX with the GPIO number you want to configure
-
+#define WAKEUP_PIN GPIO_NUM_33
+#define WAKEUP_PIN_BITMASK (1ULL << WAKEUP_PIN)
 
 const esp_spp_mode_t esp_spp_mode = ESP_SPP_MODE_CB;
 const bool esp_spp_enable_l2cap_ertm = true;
@@ -151,15 +154,16 @@ void online_task(void *pvParameters)
 }
 
 
+
+
 void offline_task(void *pvParameters) {
     while (1) {
         if (xSemaphoreTake(bluetooth_semaphore, portMAX_DELAY) == pdTRUE) { // Wait indefinitely for the semaphore
-        // Do offline tasks here
-            //LMPD_SYSTEM_handleActionT_sd(handle_ds, bluetooth_connected);
-            ESP_LOGI("ADC_ADS", "Performed action, wrote on SD");
-            vTaskDelay(pdMS_TO_TICKS(1000));  // Example: delay for 1 second
+            // Do offline tasks here
+            ESP_LOGI("ADC_ADS", "System is Offline");
+
+            // Enter light sleep mode
         }
-   
     }
 }
 
@@ -173,6 +177,7 @@ void app_main(void)
         // Semaphore creation failed
         // Handle error
     }
+
 
 
        gpio_config_t io_conf;
