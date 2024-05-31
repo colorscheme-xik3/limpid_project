@@ -2,7 +2,7 @@
 # LIMPID C code structure
 
 <p align="center">
-  <img src="/esp-code/images/diagram_system.png" alt="Limpid Project" width="300">
+  <img src="/esp-code/images/diagram_system.png" alt="Limpid Project" width="600">
 </p>
 
 Limpid Water Statistics is an ESP-32 microcontroller-based project aimed at collecting and processing various water quality parameters. The system is structured into several main tasks and components, each responsible for handling specific functionalities and sensor data.
