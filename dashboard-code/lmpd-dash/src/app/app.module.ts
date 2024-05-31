@@ -16,6 +16,7 @@ import { WaterComponent } from './dashboard/water/water.component'; // Import th
 import ApexCharts from 'apexcharts';
 import { HttpClientModule } from '@angular/common/http';
 import { SurfComponent } from './dashboard/surf/surf.component';
+import { AboutComponent } from './dashboard/about/about.component';
 
 
 
@@ -28,6 +29,7 @@ const routes: Routes = [
     children: [
       { path: 'home', component: HomeComponent },
       { path: 'water', component: WaterComponent },
+      { path: 'about', component: AboutComponent },
 
       // Add other child routes as needed
       { path: '', redirectTo: 'home', pathMatch: 'full' } // Default child route
@@ -44,6 +46,7 @@ const routes: Routes = [
     HomeComponent,
     WaterComponent,
     SurfComponent,
+    AboutComponent,
   ],
   imports: [
     BrowserModule,

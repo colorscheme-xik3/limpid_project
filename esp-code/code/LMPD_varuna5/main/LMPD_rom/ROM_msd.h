@@ -35,6 +35,7 @@ esp_err_t LMPD_device_writing(const char *filename, char *parameter, float data)
 esp_err_t LMPD_device_writing_space(const char *filename);
 esp_err_t LMPD_device_writing_string(const char *filename, char *parameter, char* data);
 esp_err_t LMPD_device_read_block(const char *filename, char *block_buffer, size_t buffer_size);
+esp_err_t LMPD_device_writing_f(const char *filename, char *parameter, float data, int precision);
 
 
 

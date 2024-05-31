@@ -18,14 +18,15 @@ WaterParams LastParams;
 Date LastDate;
 static esp_adc_cal_characteristics_t adc2_chars;
 
-
+#define DS18B20_PIN GPIO_NUM_4
 
 void LMPD_SYSTEM_handleActionT(onewire_bus_handle_t handle_ds, esp_spp_cb_param_t *param)
 {
+
     LMPD_SYSTEM_PM(POWER_MODE_ON);
     char sppVoltageT[4] = "";
     LastParams.Temperature = ds18b20_readTemperature(handle_ds);
-    ESP_LOGI(TAG_ADS, "T Value: %f", LastParams.Temperature);
+    ESP_LOGI(TAG_ADS, "T Value: %.1f", LastParams.Temperature);
 
     sprintf(sppVoltageT, "%.1fT", LastParams.Temperature);
     esp_spp_write(param->write.handle, strlen(sppVoltageT), (uint8_t *)sppVoltageT);
@@ -132,10 +133,10 @@ void LMPD_SYSTEM_save_parameters(bool mode_flag)
     if(mode_flag)
     {
         printf("Guardei");
-        LMPD_device_writing(MOUNT_POINT"/param.csv", t_parameter, LastParams.Temperature);
-        LMPD_device_writing(MOUNT_POINT"/param.csv", p_parameter, LastParams.PHydrogen);
-        LMPD_device_writing(MOUNT_POINT"/param.csv", s_parameter, LastParams.TDSolids);
-        LMPD_device_writing(MOUNT_POINT"/param.csv", o_parameter, LastParams.Doxygen);
+        LMPD_device_writing_f(MOUNT_POINT"/param.csv", t_parameter, LastParams.Temperature, 1);
+        LMPD_device_writing_f(MOUNT_POINT"/param.csv", p_parameter, LastParams.PHydrogen, 1);
+        LMPD_device_writing_f(MOUNT_POINT"/param.csv", s_parameter, LastParams.TDSolids, 0);
+        LMPD_device_writing_f(MOUNT_POINT"/param.csv", o_parameter, LastParams.Doxygen, 2);
         LMPD_device_writing_string(MOUNT_POINT"/param.csv", b_parameter, LastParams.Turbidity);
         LMPD_device_writing_string(MOUNT_POINT"/param.csv", w_parameter, LastParams.waterType);
         LMPD_device_writing_string(MOUNT_POINT"/param.csv", d_parameter, join_date);
@@ -144,7 +145,6 @@ void LMPD_SYSTEM_save_parameters(bool mode_flag)
     }
 
 }
-
 
 
 void LMPD_SYSTEM_handleActionF(esp_spp_cb_param_t *param)
@@ -162,7 +162,7 @@ void LMPD_SYSTEM_handleActionF(esp_spp_cb_param_t *param)
     // Read the next block of data from the CSV file
     ret = LMPD_device_read_block(filename, block_buffer, sizeof(block_buffer));
     if (ret != ESP_OK) {
-        sprintf(sppStopFlush, "%.1fZ", test);
+        //sprintf(sppStopFlush, "%.1fZ", test);
         esp_spp_write(param->write.handle, strlen(sppStopFlush), (uint8_t*)sppStopFlush);
         ESP_LOGE(FLUSH_TAG, "No more blocks to read", current_block_index);
         return;

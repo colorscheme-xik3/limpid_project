@@ -324,6 +324,25 @@ esp_err_t LMPD_device_writing(const char *filename, char *parameter, float data)
     return ESP_OK;
 }
 
+esp_err_t LMPD_device_writing_f(const char *filename, char *parameter, float data, int precision)
+{   
+    char format[10]; // Format specifier for snprintf
+    snprintf(format, sizeof(format), "%%s,%%.%df", precision);
+    
+    char info[200]; // Adjust size as needed
+    snprintf(info, sizeof(info), format, parameter, data);
+    
+    // Call the sd_card_write function to write the data to the file
+    esp_err_t write_result = sd_card_write(filename, info);
+    
+    if (write_result != ESP_OK) {
+        // Handle write error
+        return write_result;
+    }
+
+    return ESP_OK;
+}
+
 esp_err_t LMPD_device_writing_string(const char *filename, char *parameter, char* data)
 {   
 

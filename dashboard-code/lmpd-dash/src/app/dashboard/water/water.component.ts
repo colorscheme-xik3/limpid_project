@@ -5,6 +5,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { switchMap, startWith, distinctUntilChanged } from 'rxjs/operators';
 import ApexCharts from 'apexcharts';
 import { ApexOptions } from 'apexcharts';
+import { time } from 'console';
 
 interface SensorValues {
   [key: string]: {
@@ -90,26 +91,26 @@ export class WaterComponent implements OnInit {
         const selectedDuration = parseInt(this.selectedDuration, 10);
         
         // Compute average values for the last N timestamps based on selected duration
-        const averageValues = this.computeAverageValuesAcrossTimestamps(this.latestSensorValues, this.lastFiveTimestamps);
+        const averageValues = this.computeAverageValuesAcrossTimestamps(this.latestSensorValues, this.lastFiveTimestamps, this.selectedWaterType);
         
         // Update the radar chart with the computed average values
-        this.updateRadarChart(averageValues);
+       this.updateRadarChart(averageValues);
       }
     
       // Update the chart when sensorValues are received
-      this.toggleChartType();
+      this.checkChartType();
     });
     
   }
 
 
-  private computeAverageValuesAcrossTimestamps(sensorValues: SensorValues, timestamps: string[]): number[] {
+  private computeAverageValuesAcrossTimestamps(sensorValues: SensorValues, timestamps: string[], waterType: string): number[] {
     const totalValues: number[] = [0, 0, 0, 0]; // Initialize total values array
     let count = 0; // Initialize count of valid entries
-
+  
     timestamps.forEach(timestamp => {
       const entry = sensorValues[timestamp];
-      if (entry) {
+      if (entry && entry["Water Type"] === waterType) {
         totalValues[0] += parseFloat(entry.Temperature) || 0;
         totalValues[1] += parseFloat(entry["Potential Hydrogen"]) || 0;
         totalValues[2] += parseFloat(entry["Total Dissolved Solids"]) || 0;
@@ -117,11 +118,12 @@ export class WaterComponent implements OnInit {
         count++;
       }
     });
-
+  
     // Calculate averages
     const averages = totalValues.map(value => (count > 0 ? value / count : 0));
     return averages;
   }
+  
 
 
 
@@ -134,8 +136,52 @@ export class WaterComponent implements OnInit {
  
   }
 
+  checkChartType(): void {
+    this.chartKey++;
 
-  toggleChartType(): void {
+    if (this.showAreaChart) {
+      // Destroy the radar chart if it exists
+      if (this.chartRadar) {
+        this.chartRadar.destroy();
+        this.chartRadar = null;
+      }
+      // Initialize and update the area chart
+      this.initializeChart();
+      this.updateAreaChart(); // Update with area chart data
+    } else {
+      // Destroy the area chart if it exists
+      if (this.chart) {
+        this.chart.destroy();
+        this.chart = null;
+      }
+      // Initialize and update the radar chart
+      if (this.latestSensorValues) {
+        // Determine the timestamps based on the selected duration
+        const selectedDuration = parseInt(this.selectedDuration, 10);
+        const timestamps = this.getLastTimestamps(this.latestSensorValues, selectedDuration);
+
+        if (timestamps) {
+          // Compute average values based on the filtered timestamps
+          const averageValues = this.computeAverageValuesAcrossTimestamps(this.latestSensorValues, timestamps, this.selectedWaterType);
+
+          // Initialize and update radar chart with computed average values
+          this.initializeRadialBar(averageValues);
+          //this.updateRadarChart(averageValues);
+
+          if (timestamps.length === 0) {
+            console.warn('No timestamps available for the selected duration.');
+          }
+        } else {
+          console.warn('No timestamps available for the selected duration.');
+        }
+      } else {
+        console.warn('Not enough data to initialize the radar chart.');
+      }
+    }
+  }
+
+
+  ShowChartType(): void {
     this.showAreaChart = !this.showAreaChart; // Toggle the chart type flag
     console.log('showAreaChart:', this.showAreaChart); // Log the current state of showAreaChart
 
@@ -165,7 +211,7 @@ export class WaterComponent implements OnInit {
 
         if (timestamps) {
           // Compute average values based on the filtered timestamps
-          const averageValues = this.computeAverageValuesAcrossTimestamps(this.latestSensorValues, timestamps);
+          const averageValues = this.computeAverageValuesAcrossTimestamps(this.latestSensorValues, timestamps, this.selectedWaterType);
 
           // Initialize and update radar chart with computed average values
           this.initializeRadialBar(averageValues);
@@ -185,47 +231,74 @@ export class WaterComponent implements OnInit {
   
 
 
-onDurationChange(): void {
-  console.log('Selected Duration:', this.selectedDuration);
+  onDurationChange(): void {
+    console.log('Selected Duration:', this.selectedDuration);
+    
+    if (!this.latestSensorValues) {
+      console.warn('No sensorValues available.');
+      return;
+    }
   
-  if (!this.latestSensorValues) {
-    console.warn('No sensorValues available.');
-    return;
-  }
-
-  // Update lastFiveTimestamps based on the selected duration
-  const selectedDuration = parseInt(this.selectedDuration, 10);
-  this.lastFiveTimestamps = this.getLastTimestamps(this.latestSensorValues, selectedDuration);
-
-  // Determine which chart to update based on the current chart type
-  if (this.showAreaChart) {
-    // Update area chart with new data
-    this.updateAreaChart();
-  } else {
-    // Compute average values based on the latest sensor values and lastFiveTimestamps
-    if (this.lastFiveTimestamps && this.lastFiveTimestamps.length > 0) {
-      const averageValues = this.computeAverageValuesAcrossTimestamps(this.latestSensorValues, this.lastFiveTimestamps);
-      this.updateRadarChart(averageValues);
+    // Update lastFiveTimestamps based on the selected duration
+    const selectedDuration = parseInt(this.selectedDuration, 10);
+    this.lastFiveTimestamps = this.getLastTimestamps(this.latestSensorValues, selectedDuration);
+  
+    console.log('Updated lastFiveTimestamps:', this.lastFiveTimestamps);
+  
+    // Determine which chart to update based on the current chart type
+    if (this.showAreaChart) {
+      // Update area chart with new data
+      this.updateAreaChart();
     } else {
-      console.warn('No timestamps available for the selected duration.');
+      // Compute average values based on the latest sensor values and lastFiveTimestamps
+      if (this.lastFiveTimestamps && this.lastFiveTimestamps.length > 0) {
+        const averageValues = this.computeAverageValuesAcrossTimestamps(this.latestSensorValues, this.lastFiveTimestamps, this.selectedWaterType);
+        console.log('Computed averageValues for radar chart:', averageValues);
+        
+        // Destroy the existing radar chart if it exists
+        if (this.chartRadar) {
+          this.chartRadar.destroy();
+          this.chartRadar = null;
+        }
+  
+        // Initialize a new radar chart with the computed average values
+        this.initializeRadialBar(averageValues);
+      } else {
+        console.warn('No timestamps available for the selected duration.');
+      }
     }
   }
-}
+  
 
   
 
-onWaterTypeChange(): void {
-  console.log('Selected Water Type:', this.selectedWaterType);
-  this.updateAreaChart(); // Update chart data based on selected water type
-
-  // Compute average values based on the latest sensor values and lastFiveTimestamps
-  if (this.latestSensorValues && this.lastFiveTimestamps) {
-    const averageValues = this.computeAverageValuesAcrossTimestamps(this.latestSensorValues, this.lastFiveTimestamps);
-    this.updateRadarChart(averageValues); // Update radar chart data based on selected water type
-  } else {
-    console.warn('Not enough data to update the radar chart.');
+  onWaterTypeChange(): void {
+    console.log('Selected Water Type:', this.selectedWaterType);
+  
+    // Determine which chart to update based on the current chart type
+    if (this.showAreaChart) {
+      // Update area chart with new data
+      this.updateAreaChart();
+    } else {
+      // Compute average values based on the latest sensor values and lastFiveTimestamps
+      if (this.latestSensorValues && this.lastFiveTimestamps) {
+        const averageValues = this.computeAverageValuesAcrossTimestamps(this.latestSensorValues, this.lastFiveTimestamps, this.selectedWaterType);
+        console.log('Computed averageValues for radar chart:', averageValues);
+  
+        // Destroy the existing radar chart if it exists
+        if (this.chartRadar) {
+          this.chartRadar.destroy();
+          this.chartRadar = null;
+        }
+  
+        // Initialize a new radar chart with the computed average values
+        this.initializeRadialBar(averageValues);
+      } else {
+        console.warn('Not enough data to update the radar chart.');
+      }
+    }
   }
-}
+  
   
   
 
@@ -317,71 +390,24 @@ onWaterTypeChange(): void {
 
   
   updateRadarChart(averageValues: number[]) {
-    if (this.latestSensorValues && this.lastFiveTimestamps) {
-      const filteredSensorValues = this.lastFiveTimestamps.map(timestamp => {
-        const sensorValue = this.latestSensorValues;
-        const entry: {
-          Temperature?: number;
-          "Potential Hydrogen"?: number;
-          "Total Dissolved Solids"?: number;
-          "Dissolved Oxygen"?: number;
-          "Turbidity"?: number;
-        } = {};
-  
-        // Check if sensorValue exists and matches the selected water type
-        if (sensorValue && sensorValue[timestamp]?.["Water Type"] === this.selectedWaterType) {
-          // Include sensor values only if they match the selected water type
-          if (this.showTemperature) {
-            entry.Temperature = parseFloat(sensorValue[timestamp]?.Temperature);
-          }
-          if (this.showPotentialHydrogen) {
-            entry["Potential Hydrogen"] = parseFloat(sensorValue[timestamp]?.['Potential Hydrogen']);
-          }
-          if (this.showTDS) {
-            entry["Total Dissolved Solids"] = parseFloat(sensorValue[timestamp]?.['Total Dissolved Solids']);
-          }
-          if (this.showDO) {
-            entry["Dissolved Oxygen"] = parseFloat(sensorValue[timestamp]?.['Dissolved Oxygen']);
-          }
-          if (this.showTurb) {
-            entry["Turbidity"] = parseFloat(sensorValue[timestamp]?.['Turbidity']);
-          }
-        }
-  
-        return entry;
-      });
-  
-      // Compute average values for the filtered sensor values
-      const totalValues: number[] = [0, 0, 0, 0, 0]; // Initialize total values array for all parameters
-      let count = 0; // Initialize count of valid entries
-  
-      filteredSensorValues.forEach(entry => {
-        if (entry.Temperature !== undefined) totalValues[0] += entry.Temperature;
-        if (entry["Potential Hydrogen"] !== undefined) totalValues[1] += entry["Potential Hydrogen"];
-        if (entry["Total Dissolved Solids"] !== undefined) totalValues[2] += entry["Total Dissolved Solids"];
-        if (entry["Dissolved Oxygen"] !== undefined) totalValues[3] += entry["Dissolved Oxygen"];
-        if (entry["Turbidity"] !== undefined) totalValues[4] += entry["Turbidity"];
-        count++;
-      });
-  
-      // Calculate averages
-      const averageValues = totalValues.map(value => (count > 0 ? value / count : 0));
-  
+    if (this.chartRadar) {
       // Update the radar chart with the computed average values
-      if (this.chartRadar) {
-        const series = averageValues.map((value, index) => ({
-          name: ['Temperature', 'Potential Hydrogen', 'Total Dissolved Solids', 'Dissolved Oxygen', 'Turbidity'][index],
-          data: [value]
-        }));
+      const series = averageValues.map((value, index) => ({
+        name: ['Temperature', 'Potential Hydrogen', 'Total Dissolved Solids', 'Dissolved Oxygen'][index],
+        data: [value]
+      }));
   
-        this.chartRadar.updateSeries(series);
-      } else {
-        console.warn('Radar chart is not initialized.');
-      }
+      console.log('Updating radar chart with series:', series);
+  
+      this.chartRadar.updateSeries(series);
     } else {
-      console.warn('No timestamps available to update the radar chart.');
+      console.warn('Radar chart is not initialized.');
     }
   }
+  
+  
+  
+  
   
   
   
@@ -395,16 +421,24 @@ onWaterTypeChange(): void {
     const timestamps = Object.keys(sensorValues || {});
     const length = timestamps.length;
   
+    console.log('All timestamps:', timestamps);
+    console.log('Requested number of timestamps:', n);
+  
     if (length >= n) {
-      return timestamps.slice(-n);
+      const lastTimestamps = timestamps.slice(-n);
+      console.log('Returning last N timestamps:', lastTimestamps);
+      return lastTimestamps;
     } else if (length > 0) {
       // Return all available timestamps if there are fewer than the requested number
+      console.log('Returning all available timestamps:', timestamps);
       return timestamps;
     } else {
       // No timestamps available
+      console.warn('No timestamps available.');
       return null;
     }
   }
+  
 
   private initializeChart() {
     if (!this.chart) {

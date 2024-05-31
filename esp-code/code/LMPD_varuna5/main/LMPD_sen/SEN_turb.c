@@ -2,7 +2,12 @@
 
 char* sen0189_processing(float voltage)
 {    
-    float ntu = - (2572.2 * voltage * voltage) + (8700.5 * voltage) - 3850.9;
+    float ntu = - (2572.2 * voltage * voltage) + (8700.5 * voltage) - 4100.9;
+    //float ntu =  (- 519.5 * voltage * voltage) + (2500.48 * voltage) - 3000;
+   // voltage = 2.10;
+    //float ntu =  -(6351.747 * voltage * voltage) + (13672.136 * voltage) - 4352.9;
+
+    printf("%f", ntu );
     if(ntu < NTU_CLEAR_THRESHOLD)
     {
         ntu = 0;

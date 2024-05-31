@@ -14,13 +14,15 @@ const routes: Routes = [
     children: [
       { path: 'home', component: HomeComponent },
       { path: 'water', component: WaterComponent },
+      { path: 'about', component: WaterComponent },
+
       // Add other child routes as needed
       { path: '', redirectTo: 'home', pathMatch: 'full' } // Default child route
     ],
   },
-  { path: '', redirectTo: '', pathMatch: 'full' },
-  { path: '**', redirectTo: '' },
+  { path: '**', redirectTo: 'login' }, // Redirect unmatched paths to the login page
 ];
+
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

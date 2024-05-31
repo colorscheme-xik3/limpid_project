@@ -112,7 +112,7 @@ float ds18b20_readTemperature(onewire_bus_handle_t handle) {
     esp_err_t err;
     float temperature = 0.0;
 
-    vTaskDelay(pdMS_TO_TICKS(200));
+    vTaskDelay(pdMS_TO_TICKS(100));
 
     // set all sensors' temperature conversion resolution
     err = ds18b20_set_resolution(handle, NULL, DS18B20_RESOLUTION_12B);

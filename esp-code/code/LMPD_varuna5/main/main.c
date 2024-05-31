@@ -146,6 +146,7 @@ void online_task(void *pvParameters)
         // Your Bluetooth-related tasks or event loop code goes here
 
         if (!bluetooth_connected) {
+            LMPD_SYSTEM_PM(POWER_MODE_OFF);
             xSemaphoreGive(bluetooth_semaphore);
         }
 
@@ -178,15 +179,6 @@ void app_main(void)
         // Handle error
     }
 
-
-
-       gpio_config_t io_conf;
-    io_conf.intr_type = GPIO_INTR_DISABLE;        // Disable interrupt
-    io_conf.mode = GPIO_MODE_INPUT;                // Set as input mode
-    io_conf.pin_bit_mask = (1ULL << GPIO_PIN_NUMBER);  // Bit mask of the pins that you want to set
-    io_conf.pull_up_en = GPIO_PULLUP_ENABLE;       // Enable pull-up resistor
-    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;  // Disable pull-down resistor
-    gpio_config(&io_conf);
     // ------------------------------------------ DS18B20 INIT SECTION ----------------------------------------//
     
     onewire_rmt_config_t config = {
@@ -232,7 +224,6 @@ void app_main(void)
     xTaskCreate(&online_task, "bluetooth_task", 8192, NULL, 5, NULL);
     xTaskCreate(&offline_task, "offline_task", 4096, NULL, 5, NULL);
     xTaskCreate(&LMPD_SYSTEM_waterType, "water_task", 2048, NULL, 2, NULL);
-
 
 }
 

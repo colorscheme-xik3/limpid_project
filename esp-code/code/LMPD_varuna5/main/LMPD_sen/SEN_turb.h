@@ -22,8 +22,8 @@
 #include <stdio.h>
 
 static const float NTU_CLEAR_THRESHOLD = 60;
-static const float NTU_CLOUDY_THRESHOLD = 100;
-static const float NTU_MODERATE_THRESHOLD = 400;
+static const float NTU_CLOUDY_THRESHOLD = 1000;
+static const float NTU_MODERATE_THRESHOLD = 2500;
 static const float MAX_NTU_VALUE = 3000;
 
 /**
