@@ -9,7 +9,7 @@
  * @author Francisco Duarte
  * @author Leonardo Rosa
  * 
- * @note This module requires the inclusion of "SEN_do.h" for dissolved oxygen processing functionality.
+ * @note This module requires the inclusion of "SEN_ph.h" for Potential Hydrogen processing functionality.
  */
 
 #ifndef PH_DRIVER_H_
@@ -84,7 +84,7 @@ void LMPD_PH_selector(int sensor_ph);
  * @param[in] voltage The voltage reading for calibration.
  * @return The calibrated pH value.
  */
-float LMPD_PH_calibrator(int calib_points, int voltage);
+float LMPD_PH_calibrator(int calib_points, int voltage, float temperature);
 
 /**
  * @brief Calibrate the pH sensor using 3 points calibration.
@@ -92,6 +92,7 @@ float LMPD_PH_calibrator(int calib_points, int voltage);
  * This function calibrates the pH sensor using 3 points calibration method.
  *
  * @param[in] voltage The voltage reading for calibration.
+ * @param temperature Temperature of the solution.
  * @return The calibrated pH value.
  */
 float LMPD_PH_calibrate3p(int voltage, float temperature, int sensor_ph);

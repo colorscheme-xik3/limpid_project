@@ -17,26 +17,15 @@ The Limpid Project is an Internet of Things (IoT) initiative aimed at monitoring
 
 ## Technologies Used
 
-- **Hardware:** [ESP-32 DEVKIT D]
-- **Software:** [C, kotlin, html/css/js, python]
+- **Hardware:** [ESP-32 DEVKITV4]
+- **Software:** [C, kotlin, Angular, python]
 - **Design:** [kicad]
 
-## Getting Started
+## Varuna5 PCB
 
-To get started with the Limpid Project, follow these steps:
+<p align="center">
+  <img src="/images/Varuna5.png" alt="Limpid Project" width="500">
+</p>
 
-1. [Installation instructions, if applicable]
-2. [Configuration settings, if needed]
-3. [Instructions for deploying the IoT devices]
 
-## Usage
 
-1. [Instructions for accessing the user interface]
-2. [Guidelines for interpreting the water quality data]
-3. [Any other relevant usage instructions]
-
-## Acknowledgments
-
-- [Any acknowledgments or credits you want to include]
-
-Feel free to modify the sections based on your project's specifics, and make sure to include information relevant to your IoT water quality monitoring project.

@@ -24,9 +24,6 @@ WaterQualitySpecs waterQualityStandards[] = {
 };
 
 
-
-// Function to determine the current water type based on measured parameters
-// Function to determine the current water type based on measured parameters (FreeRTOS task)
 void LMPD_SYSTEM_waterType(void *pvParameters) {
 
     while (1) {

@@ -42,7 +42,7 @@ void LMPD_SYSTEM_handleActionP(esp_spp_cb_param_t *param)
     float raw_A0 = (LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A0, ADS1115_CONFIG_LSB));
     float mvolt_A0 = ((raw_A0* 4.096) / (32767))*1000;
     
-    LastParams.PHydrogen = LMPD_PH_calibrator(CALIBRATION_POINTS, raw_A0);
+    LastParams.PHydrogen = LMPD_PH_calibrator(CALIBRATION_POINTS, LastParams.Temperature, raw_A0);
 
     ESP_LOGI(TAG_ADS, "Raw - %f | PH Value: %f | %f",raw_A0,  mvolt_A0, LastParams.PHydrogen);
 
@@ -58,7 +58,7 @@ void LMPD_SYSTEM_handleActionS(esp_spp_cb_param_t *param)
     float raw_A1 = (LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A1, ADS1115_CONFIG_LSB));
     float mvolt_A1 = ((raw_A1* 4.096) / (32767));
 
-    LastParams.TDSolids = (uint16_t)sen0244_processing(mvolt_A1, 23);
+    LastParams.TDSolids = (uint16_t)sen0244_processing(mvolt_A1, LastParams.Temperature);
     sprintf(sppVoltageA1, "%dS",  LastParams.TDSolids);
 
     ESP_LOGI(TAG_ADS, "TDS Value: %f | %d", mvolt_A1, LastParams.TDSolids);
@@ -72,7 +72,7 @@ void LMPD_SYSTEM_handleActionD(esp_spp_cb_param_t *param)
     LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A2, ADS1115_CONFIG_LSB);
     float raw_A2 = (LMPD_I2C_configureADS(ADS1115_SENSOR_ADDR, ADS1115_CONFIG_MSB_A2, ADS1115_CONFIG_LSB));
     float mvolt_A2 = ((raw_A2* 4.096) / (32767))*1000;
-    LastParams.Doxygen = sen0237_processing(mvolt_A2, 23);
+    LastParams.Doxygen = sen0237_processing(mvolt_A2, LastParams.Temperature);
     sprintf(sppVoltageA2, "%.1fO",  LastParams.Doxygen);
 
     ESP_LOGI(TAG_ADS, " mvolt - %f - DO Value: %.1f", mvolt_A2,  LastParams.Doxygen);
@@ -145,7 +145,6 @@ void LMPD_SYSTEM_save_parameters(bool mode_flag)
     }
 
 }
-
 
 void LMPD_SYSTEM_handleActionF(esp_spp_cb_param_t *param)
 {

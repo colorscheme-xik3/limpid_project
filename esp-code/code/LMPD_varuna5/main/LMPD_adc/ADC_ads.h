@@ -1,5 +1,5 @@
 /**
- * @file ads1115_driver.h - LIMPID project
+ * @file ADC_ads.h - LIMPID project
  * @brief Header file for ADS1115 ADC driver
  * @details This driver provides functions to initialize and configure the ADS1115 ADC.
  * @version 1.0

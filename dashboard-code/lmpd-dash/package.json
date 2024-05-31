@@ -24,6 +24,7 @@
     "@angular/router": "~13.3.0",
     "apexcharts": "^3.44.1",
     "electron": "^30.0.8",
+    "electron-packager": "^17.1.2",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

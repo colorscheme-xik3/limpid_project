@@ -25,12 +25,12 @@ void LMPD_PH_selector(int sensor_ph) {
 }
 
 // Calibration type selection
-float LMPD_PH_calibrator(int calib_points, int voltage) {
+float LMPD_PH_calibrator(int calib_points, int voltage, float temperature) {
     float ph_Value;
    
     if (CALIBRATION_POINTS) {
         // Use 3 points calibration method
-        ph_Value = LMPD_PH_calibrate3p(voltage, 23, PH_SENSOR);
+        ph_Value = LMPD_PH_calibrate3p(voltage, temperature, PH_SENSOR);
     } else {
         // Use 2 points calibration method
         ph_Value = LMPD_PH_calibrate2p(voltage);

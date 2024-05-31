@@ -4,6 +4,17 @@
  * SPDX-License-Identifier: Unlicense OR CC0-1.0
  */
 
+/**
+ * @file main.c
+ * @brief Main program file for the VARUNA5 board from the LIMPID project.
+ * @details This file contains the main function and overall initialization and execution logic for the VARUNA5 board.
+ * @version 1.0
+ * @date 2024-09-10
+ * 
+ * @authors
+ * Francisco Duarte
+ * Leonardo Rosa
+ */
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
@@ -35,7 +46,7 @@
 #include "esp_pm.h"
 
 
-#define GPIO_PIN_NUMBER  GPIO_NUM_4  // Replace XX with the GPIO number you want to configure
+#define GPIO_PIN_NUMBER  GPIO_NUM_4  
 #define WAKEUP_PIN GPIO_NUM_33
 #define WAKEUP_PIN_BITMASK (1ULL << WAKEUP_PIN)
 
@@ -67,7 +78,7 @@ SemaphoreHandle_t mutex_temperature;
 SemaphoreHandle_t configureSemaphore;
 SemaphoreHandle_t writeSemaphore;
 
-SemaphoreHandle_t bluetooth_semaphore; // Semaphore to notify offline_task about Bluetooth connection status
+SemaphoreHandle_t bluetooth_semaphore; 
 
 
 
@@ -168,8 +179,6 @@ void offline_task(void *pvParameters) {
     }
 }
 
-
-    
 void app_main(void)
 {
     
@@ -178,7 +187,6 @@ void app_main(void)
         // Semaphore creation failed
         // Handle error
     }
-
     // ------------------------------------------ DS18B20 INIT SECTION ----------------------------------------//
     
     onewire_rmt_config_t config = {
@@ -214,12 +222,10 @@ void app_main(void)
     ESP_ERROR_CHECK(LMPD_I2C_init());
     ESP_LOGI(TAG_ADS, "I2C initialized successfully");
 
-
     // ------------------------------------------ SPI INIT SECTION ----------------------------------------//
 
     ESP_ERROR_CHECK(sd_card_init());
 
-   
     // ------------------------------------------ BLT INIT SECTION ----------------------------------------//
     xTaskCreate(&online_task, "bluetooth_task", 8192, NULL, 5, NULL);
     xTaskCreate(&offline_task, "offline_task", 4096, NULL, 5, NULL);

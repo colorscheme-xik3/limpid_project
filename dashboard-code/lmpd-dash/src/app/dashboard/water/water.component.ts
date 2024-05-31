@@ -110,26 +110,24 @@ export class WaterComponent implements OnInit {
   
     timestamps.forEach(timestamp => {
       const entry = sensorValues[timestamp];
-      if (entry && entry["Water Type"] === waterType) {
-        totalValues[0] += parseFloat(entry.Temperature) || 0;
-        totalValues[1] += parseFloat(entry["Potential Hydrogen"]) || 0;
-        totalValues[2] += parseFloat(entry["Total Dissolved Solids"]) || 0;
-        totalValues[3] += parseFloat(entry["Dissolved Oxygen"]) || 0;
-        count++;
+      // Exclude entries with water type "FLOATING PROBE"
+      if (entry && entry["Water Type"]!== 'FLOATING PROBE') {
+        if (entry["Water Type"] === waterType) {
+          totalValues[0] += parseFloat(entry.Temperature) || 0;
+          totalValues[1] += parseFloat(entry["Potential Hydrogen"]) || 0;
+          totalValues[2] += parseFloat(entry["Total Dissolved Solids"]) || 0;
+          totalValues[3] += parseFloat(entry["Dissolved Oxygen"]) || 0;
+          count++;
+        }
       }
     });
   
     // Calculate averages
-    const averages = totalValues.map(value => (count > 0 ? value / count : 0));
+    const averages = totalValues.map(value => (count > 0? value / count : 0));
     return averages;
   }
   
-
-
-
-
   
-
   redoAreaChart(): void {
 
     this.updateAreaChart(); // Update with area chart data
@@ -315,7 +313,7 @@ export class WaterComponent implements OnInit {
         } = { Timestamp: timestamp };
   
         // Check if sensorValue exists and matches the selected water type
-        if (sensorValue && sensorValue[timestamp]?.["Water Type"] === this.selectedWaterType) {
+        if (sensorValue && sensorValue[timestamp]?.["Water Type"]!== 'FLOATING PROBE' && sensorValue[timestamp]?.["Water Type"] === this.selectedWaterType) {          
           // Include sensor values only if they match the selected water type
           if (this.showTemperature) {
             entry.Temperature = parseFloat(sensorValue[timestamp]?.Temperature);
@@ -417,27 +415,31 @@ export class WaterComponent implements OnInit {
     return this.db.object<any>(path).valueChanges();
   }
 
-  private getLastTimestamps(sensorValues: { [key: string]: { Temperature: string, "Potential Hydrogen": string } }, n: number): string[] | null {
-    const timestamps = Object.keys(sensorValues || {});
-    const length = timestamps.length;
   
-    console.log('All timestamps:', timestamps);
+  private getLastTimestamps(sensorValues: SensorValues, n: number): string[] | null {
+    // Filter out timestamps with "FLOATING PROBE" water type
+    const filteredTimestamps = Object.keys(sensorValues || {}).filter(timestamp => sensorValues[timestamp]["Water Type"] !== 'FLOATING PROBE');
+    const length = filteredTimestamps.length;
+  
+    console.log('Filtered timestamps:', filteredTimestamps);
     console.log('Requested number of timestamps:', n);
   
     if (length >= n) {
-      const lastTimestamps = timestamps.slice(-n);
+      const lastTimestamps = filteredTimestamps.slice(-n);
       console.log('Returning last N timestamps:', lastTimestamps);
       return lastTimestamps;
     } else if (length > 0) {
-      // Return all available timestamps if there are fewer than the requested number
-      console.log('Returning all available timestamps:', timestamps);
-      return timestamps;
+      // Return all available filtered timestamps if there are fewer than the requested number
+      console.log('Returning all available filtered timestamps:', filteredTimestamps);
+      return filteredTimestamps;
     } else {
       // No timestamps available
       console.warn('No timestamps available.');
       return null;
     }
   }
+  
+  
   
 
   private initializeChart() {

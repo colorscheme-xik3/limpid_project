@@ -3,8 +3,6 @@
 
 #include "../LMPD_ch/MSG_handler.h" 
 
-
-
 #include <stdint.h>  
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"

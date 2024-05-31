@@ -161,7 +161,6 @@ void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
             ESP_LOGI(SPP_TAG, "Received date: %s", date_string);
             LMPD_SYSTEM_Time(date_string);
             LMPD_SYSTEM_save_parameters(sd_mode);
-
         }
 
 #else

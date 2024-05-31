@@ -1,1 +1,68 @@
 @import '../../wrapper/wrapper.component.css';
+
+
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+
+.about-container {
+    flex-direction: column;
+    align-items: center;
+    background-color: #212121;
+    font-family: 'Raleway', sans-serif;
+    color: #f4f4f4;
+    display: block;
+    width: 100%;
+    border-radius: 0; /* Remove the border radius */
+    height: 100vh;
+    background-color: #212121; /* Replace with your desired background color */
+}
+
+
+
+.about-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.about-logo {
+    width: 15%;
+    height: auto;
+    margin-top: 10px;
+    margin-left: 12%;
+
+}
+
+.about-content {
+    margin-left: 20%;
+
+    max-width: 1000px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.about-content p {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-top: 5%;
+    margin-bottom: 20px;
+}
+
+.about-content h2 {
+    font-size: 24px;
+    margin-top: 5%;
+    margin-bottom: 10px;
+}
+
+.about-content ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.about-content ul li {
+    background: #333;
+    color: #fff;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}

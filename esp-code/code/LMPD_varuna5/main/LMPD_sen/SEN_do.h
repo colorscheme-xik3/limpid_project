@@ -21,27 +21,7 @@
 #include "SEN_ds.h"
 
 
-/*#define TWO_POINT_CALIBRATION 1
-#define READ_TEMP 25
-#define CAL1_V 1273.66f
-#define CAL1_T 25
-#define CAL2_V 849.72f
-#define CAL2_T 13
-#define TEMPERATURE_COEFFICIENT 35.0f*/
-
-/*
 #define TWO_POINT_CALIBRATION 1
-#define READ_TEMP 25
-#define CAL1_V 1500.5f
-#define CAL1_T 45
-#define CAL05_V 1000.5f
-#define CAL05_T 25
-#define CAL2_V 849.72f
-#define CAL2_T 13
-#define TEMPERATURE_COEFFICIENT 35.0f
-*/
-
-#define TWO_POINT_CALIBRATION 0
 #define READ_TEMP 25
 #define CAL1_V 1200.5f
 #define CAL1_T 40
