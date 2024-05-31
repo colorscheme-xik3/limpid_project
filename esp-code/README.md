@@ -1,69 +1,46 @@
 
-# LIMPID convention for C coding
+# LIMPID C code structure
 
 <p align="center">
   <img src="/esp-code/images/diagram_system.png" alt="Limpid Project" width="300">
 </p>
 
-## Description
+Limpid Water Statistics is an ESP-32 microcontroller-based project aimed at collecting and processing various water quality parameters. The system is structured into several main tasks and components, each responsible for handling specific functionalities and sensor data.
 
-This naming is dedicated to developing embedded C code specifically for the ESP-32 microcontroller. To maintain consistency and enhance code readability, we have established the following naming conventions.
-We follow a consistent naming convention for various elements to ensure clarity and maintainability.
+## Overview
 
-The prefix should always indicate the driver parameter and the convention should follow  snake_case.
+The project structure is divided into tasks, folders, `.c` files, and `.h` files, with each element playing a specific role in the system. Below is an overview of the project's architecture:
 
-### Drivers 
+### Tasks
 
-The drivers in the LIMPID project should always have the prefix "LMPD" before each name. 
+- **task1**
+  - **LMPD_blt**: Responsible for Bluetooth communication.
+  - **LMPD_ch**: Main controller handling sensor data acquisition and communication.
 
-```c
-LMPD_ph.c
-LMPD_blt.c
-```
+- **task2**
+  - **LMPD_wpp**: Manages water pumping process.
 
-### Common variables
+- **task3**
+  - Bluetooth offline task.
 
-- Use meaningful names that describe the purpose of the variable.
+### Hardware Components
 
-```c
-int ph_result;
-float tb_sensitivity;
-char blt_code[50];
-```
+- **ESP-32 MCU**: The central microcontroller unit managing the entire system.
 
-### Constant variables
+### Main Folders
 
-- Use uppercase letters with underscores to separate words.
-- Provide a clear and concise name that indicates the purpose of the constant.
+- **LMPD_ch**: Encompasses core components and functionalities related to sensor data handling.
+- **LMPD_sen**: Contains sensor-specific files and drivers.
+- **LMPD_rom**: microSD related functionalities.
+- **LMPD_wpp**: Water Type processing;.
+- **LMPD_blt**: Bluetooth drivers.
 
-```c
-#define PH_LEVEL_SIZE 100
-```
+### Sensors
 
-### Global variables
-
-- Prefix global variables with "g_" to distinguish them from local variables.
-
-```c
-int g_blt_address;
-```
-### Pointer variables
-
-- Include the type in the variable name to clarify that it's a pointer.
-
-```c
-int* p_ph_integer;
-char* p_ph_buffer;
-```
-
-### Function convention
-
-- Use meaningful names that describe the action or purpose of the function.
-
-```c
-void ph_function1(); //potential hydrogen
-void do_function2(); //dissolved oxygen
-void tb_function3(); //turbidity 
-```
+- **SEN_ds**: Manages temperature sensor data.
+- **SEN_ph**: Handles pH sensor data.
+- **SEN_tds**: Manages Total Dissolved Solids sensor data.
+- **SEN_do**: Manages Dissolved Oxygen sensor data.
+- **SEN_turb**: Manages Turbidity sensor data.
 
 
